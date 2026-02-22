@@ -3,20 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VuTungToolHEX | AI Pro MAX</title>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@300;500;700&display=swap" rel="stylesheet">
+    <title>VuTungTool PRO</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@300;500;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #050505;
-            --panel: #111;
+            --panel: #0d0d0f;
             --accent: #00d2ff;
             --accent-glow: rgba(0, 210, 255, 0.4);
             --text-main: #f0f0f0;
-            --text-dim: #888;
-            --border: #333;
+            --text-dim: #71717a;
+            --border: #27272a;
             --success: #00ff9d;
-            --ai-color: #b161ff; /* Màu riêng cho AI */
-            --ai-glow: rgba(177, 97, 255, 0.4);
+            --warning: #f59e0b;
         }
 
         * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -25,426 +24,233 @@
             background: var(--bg);
             color: var(--text-main);
             font-family: 'Plus Jakarta Sans', sans-serif;
-            margin: 0;
-            padding: 20px 10px;
-            min-height: 100vh;
+            margin: 0; padding: 10px; min-height: 100vh;
             overflow-x: hidden;
         }
 
-        /* Container Chính */
-        .app-wrapper {
-            width: 100%;
-            max-width: 800px;
-            margin: 0 auto;
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-            overflow: hidden;
-            position: relative;
+        /* MENU 3 GẠCH */
+        .side-menu {
+            position: fixed; top: 0; left: -280px; width: 280px; height: 100%;
+            background: var(--panel); border-right: 1px solid var(--border);
+            z-index: 10000; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); padding: 25px;
         }
-
-        /* Header & Menu 3 gạch */
-        .app-header {
-            padding: 20px;
-            background: linear-gradient(180deg, rgba(255,255,255,0.03), transparent);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+        .side-menu.active { left: 0; box-shadow: 15px 0 40px rgba(0,0,0,0.7); }
+        .menu-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+            z-index: 9999; display: none; backdrop-filter: blur(4px);
         }
-
-        .brand { display: flex; align-items: center; gap: 10px; }
-        .brand-icon { width: 24px; height: 24px; background: var(--ai-color); border-radius: 6px; box-shadow: 0 0 10px var(--ai-glow); transition: 0.3s;}
-        .brand-name { font-weight: 700; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; }
-
-        .header-actions { display: flex; align-items: center; gap: 10px; }
-
-        /* Nút 3 gạch */
-        .menu-btn {
-            background: transparent; border: none; color: var(--text-main);
-            font-size: 1.5rem; cursor: pointer; padding: 0 5px; transition: 0.3s;
-        }
-        .menu-btn:active { color: var(--accent); }
-
-        /* Sidebar Menu */
-        .sidebar {
-            position: fixed; top: 0; right: -250px; width: 250px; height: 100%;
-            background: #0a0a0a; border-left: 1px solid var(--border); z-index: 10000;
-            transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1); padding: 20px;
-            box-shadow: -5px 0 30px rgba(0,0,0,0.8);
-        }
-        .sidebar.active { right: 0; }
-        .sidebar-close { text-align: right; margin-bottom: 20px; }
-        .sidebar-close button { background: none; border: none; color: #fff; font-size: 2rem; cursor: pointer; }
-        .menu-item {
-            display: block; padding: 15px; margin-bottom: 10px; border-radius: 10px;
-            background: #111; color: #fff; text-decoration: none; font-weight: bold;
-            font-size: 0.9rem; border: 1px solid #222; transition: 0.3s; cursor: pointer;
-        }
-        .menu-item.active-menu { border-color: var(--accent); color: var(--accent); background: rgba(0, 210, 255, 0.05); }
-        .menu-item.ai-menu { border-color: var(--ai-color); color: var(--ai-color); background: rgba(177, 97, 255, 0.05);}
-        .menu-item:hover { transform: translateX(-5px); }
-
-        /* Overlay khi mở menu */
-        .menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; display: none; backdrop-filter: blur(2px); }
         .menu-overlay.active { display: block; }
 
-        /* =========================================
-           STYLE CHO TOOL AI (TRANG CHỦ)
-           ========================================= */
-        #aiView { display: block; padding: 20px; } /* Block mặc định */
-        .ai-header { text-align: center; margin-bottom: 20px; }
-        .ai-icon { font-size: 2.5rem; text-shadow: 0 0 20px var(--ai-color); margin-bottom: 10px;}
-        .ai-title { color: var(--ai-color); font-weight: 700; font-size: 1.2rem; text-transform: uppercase;}
-        .ai-desc { font-size: 0.8rem; color: var(--text-dim); margin-top: 5px; }
-        
-        .ai-input-box { background: #000; padding: 15px; border-radius: 16px; border: 1px solid #333; margin-bottom: 15px; }
-        .ai-input-box textarea { width: 100%; min-height: 80px; background: #1a1a1a; border: 1px solid var(--border); color: var(--text-main); padding: 12px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; resize: vertical; margin-bottom: 10px;}
-        .ai-input-box textarea:focus { border-color: var(--ai-color); }
-        
-        .ai-btn-group { display: flex; gap: 10px; }
-        .ai-btn { flex: 1; background: var(--ai-color); color: #fff; border: none; padding: 12px; border-radius: 12px; font-weight: bold; font-size: 0.9rem; cursor: pointer; box-shadow: 0 4px 15px var(--ai-glow); text-transform: uppercase;}
-        .ai-btn:active { transform: scale(0.98); }
-        .ai-btn-file { background: #222; color: var(--ai-color); border: 1px solid var(--ai-color); box-shadow: none; }
-
-        .ai-chat-box { background: #0a0a0a; border: 1px solid #222; border-radius: 12px; padding: 15px; height: 350px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;}
-        
-        .ai-message { background: #1a1a1a; padding: 12px; border-radius: 10px; font-size: 0.85rem; line-height: 1.5; border-left: 3px solid var(--ai-color); position: relative; animation: fadeIn 0.3s ease; word-wrap: break-word;}
-        .user-message { background: #111; padding: 12px; border-radius: 10px; font-size: 0.85rem; color: #ccc; text-align: right; border-right: 3px solid #555; animation: fadeIn 0.3s ease; word-wrap: break-word;}
-        .ai-message b { color: var(--ai-color); }
-        .ai-typing { font-style: italic; color: #888; }
-
-        /* =========================================
-           STYLE CHO TOOL QUÉT MÒ (VIEW PHỤ)
-           ========================================= */
-        #mainView { display: none; } /* Ẩn mặc định */
-        .control-panel { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
-        .input-group { display: flex; flex-direction: column; gap: 10px; background: #000; padding: 15px; border-radius: 16px; border: 1px solid var(--border); }
-        .mode-row { display: flex; gap: 10px; }
-        select, input { background: #1a1a1a; border: 1px solid var(--border); color: var(--text-main); padding: 12px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
-        select { flex: 1; -webkit-appearance: none; background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2300d2ff%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); background-repeat: no-repeat; background-position: right 10px top 50%; background-size: 10px; }
-        input { width: 100%; transition: border 0.3s; }
-        input:focus { border-color: var(--accent); }
-        .scan-btn { background: var(--accent); color: #000; border: none; padding: 15px; border-radius: 12px; font-weight: 800; font-size: 1rem; text-transform: uppercase; cursor: pointer; box-shadow: 0 4px 15px var(--accent-glow); }
-        .scan-btn:active { transform: scale(0.98); }
-        .progress-container { height: 4px; background: #222; width: 100%; margin-top: 5px; display: none; }
-        .progress-bar { height: 100%; background: var(--success); width: 0%; transition: width 0.1s linear; box-shadow: 0 0 10px var(--success); }
-        .results-container { padding: 0 20px 20px; background: #080808; min-height: 300px; max-height: 500px; overflow-y: auto; }
-        .result-header { margin-top: 15px; margin-bottom: 15px; font-size: 0.8rem; color: var(--text-dim); display: flex; justify-content: space-between; }
-        .result-card { background: #111; border: 1px solid #222; border-left: 3px solid var(--accent); padding: 15px; margin-bottom: 10px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; }
-        .offset-label { color: var(--text-dim); font-size: 0.7rem; display: block; margin-bottom: 5px; }
-        .hex-preview { color: var(--accent); word-break: break-all; margin-bottom: 5px; }
-        .ascii-preview { color: #fff; opacity: 0.7; font-size: 0.75rem; word-break: break-all; background: #222; padding: 5px; border-radius: 4px; }
-        #dropZone { border: 2px dashed #333; padding: 40px 20px; text-align: center; margin: 20px; border-radius: 16px; cursor: pointer; transition: 0.3s; }
-        #dropZone:hover, #dropZone.active { border-color: var(--accent); background: rgba(0, 210, 255, 0.05); }
-
-        /* MODAL */
-        .guide-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: center; z-index: 9999; opacity: 0; pointer-events: none; transition: 0.3s ease; }
-        .guide-modal.show { opacity: 1; pointer-events: all; }
-        .guide-content { background: var(--panel); border: 1px solid var(--ai-color); padding: 25px; border-radius: 16px; width: 90%; max-width: 400px; position: relative; box-shadow: 0 10px 30px var(--ai-glow); transform: translateY(-20px); transition: 0.3s ease; }
-        .guide-modal.show .guide-content { transform: translateY(0); }
-        .guide-close-icon { position: absolute; top: 10px; right: 15px; background: none; border: none; color: var(--text-dim); font-size: 1.5rem; cursor: pointer; transition: 0.2s; }
-        .guide-close-icon:hover { color: #ff4d4d; }
-        .guide-title { color: var(--ai-color); font-weight: 700; font-size: 1.2rem; margin-bottom: 15px; text-align: center; text-transform: uppercase; }
-        .guide-text { font-size: 0.85rem; color: #ccc; line-height: 1.6; margin-bottom: 20px; }
-        .btn-video { display: flex; justify-content: center; align-items: center; gap: 8px; background: rgba(177, 97, 255, 0.1); border: 1px solid var(--ai-color); color: var(--ai-color); padding: 12px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 0.9rem; transition: 0.3s; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        @media (min-width: 768px) {
-            .control-panel { flex-direction: row; align-items: flex-end; }
-            .input-group { flex: 1; flex-direction: row; align-items: center; }
-            .mode-row { min-width: 150px; }
-            .scan-btn { width: auto; padding: 0 40px; height: 50px; }
+        .menu-item {
+            padding: 14px; border-radius: 12px; margin-bottom: 8px;
+            cursor: pointer; transition: 0.2s; font-weight: 700;
+            display: flex; align-items: center; gap: 12px; color: var(--text-dim);
         }
+        .menu-item.active { background: var(--accent); color: #000; }
+
+        /* CONTAINER */
+        .app-wrapper {
+            width: 100%; max-width: 700px; margin: 0 auto;
+            background: var(--panel); border: 1px solid var(--border);
+            border-radius: 24px; overflow: hidden; position: relative;
+        }
+
+        .app-header {
+            padding: 15px 20px; border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+
+        .menu-toggle { background: none; border: none; color: var(--accent); font-size: 1.6rem; cursor: pointer; }
+
+        .section { display: none; padding: 20px; animation: fadeIn 0.3s ease; }
+        .section.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* INPUTS */
+        .input-group { background: #000; padding: 15px; border-radius: 16px; border: 1px solid var(--border); margin-bottom: 15px; }
+        label { display: block; font-size: 0.7rem; color: var(--accent); margin-bottom: 8px; font-weight: 800; text-transform: uppercase; }
+        input, select, textarea {
+            width: 100%; background: #16161a; border: 1px solid var(--border);
+            color: #fff; padding: 12px; border-radius: 10px; font-family: 'JetBrains Mono';
+        }
+        textarea { height: 120px; font-size: 0.8rem; resize: none; }
+
+        .btn {
+            width: 100%; padding: 16px; border-radius: 14px; border: none;
+            font-weight: 800; text-transform: uppercase; cursor: pointer; transition: 0.2s;
+        }
+        .btn-primary { background: var(--accent); color: #000; box-shadow: 0 4px 15px var(--accent-glow); }
+        .btn-video { background: #ef4444; color: #fff; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; font-size: 0.8rem; }
+
+        /* HEX SCANNER RESULTS (FULL BẢN GỐC) */
+        .progress-container { height: 4px; background: #222; width: 100%; display: none; margin-bottom: 10px; }
+        .progress-bar { height: 100%; background: var(--success); width: 0%; transition: width 0.1s linear; }
+        
+        .result-card {
+            background: #111; border: 1px solid #222; border-left: 3px solid var(--accent);
+            padding: 12px; margin-bottom: 10px; border-radius: 8px; font-family: 'JetBrains Mono'; font-size: 0.75rem;
+            cursor: pointer;
+        }
+        .offset-label { color: var(--text-dim); font-size: 0.65rem; display: block; margin-bottom: 4px; }
+        .hex-preview { color: var(--accent); word-break: break-all; margin-bottom: 4px; }
+        .ascii-preview { color: #fff; opacity: 0.6; font-size: 0.7rem; background: #1a1a1a; padding: 4px; border-radius: 4px; }
+
+        /* GUIDE MODAL */
+        .guide-modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+            display: flex; justify-content: center; align-items: center; z-index: 99999;
+            opacity: 0; pointer-events: none; transition: 0.3s;
+        }
+        .guide-modal.show { opacity: 1; pointer-events: all; }
+        .guide-content { background: var(--panel); padding: 30px; border-radius: 24px; width: 90%; max-width: 400px; border: 1px solid var(--border); text-align: center; }
+
+        #dropZone { border: 2px dashed var(--border); padding: 40px; text-align: center; border-radius: 20px; cursor: pointer; }
     </style>
 </head>
 <body>
 
+<audio id="bgMusic" loop preload="auto">
+    <source src="https://files.catbox.moe/97p99b.mp3" type="audio/mpeg">
+</audio>
+
 <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
 
-<div class="sidebar" id="sidebar">
-    <div class="sidebar-close">
-        <button onclick="toggleMenu()">×</button>
-    </div>
+<div class="side-menu" id="sideMenu">
+    <div style="font-weight: 900; color: var(--accent); margin-bottom: 30px; font-size: 1.2rem;">TOOL NGON</div>
+    <div class="menu-item active" onclick="switchTab('scanTab', this)"><span>🔍</span> MÒ MÃ HEX </div>
+    <div class="menu-item" onclick="switchTab('editTab', this)"><span>🛠️</span> SỬA MÃ & ĐỔI TÊN<p>Wait Update</p></div>
+    <div class="menu-item" onclick="switchTab('textToHexTab', this)"><span>⌨️</span> CHỮ SANG HEX
+<p>Wait Update</p></div>
     
-    <div style="color: var(--text-dim); font-size: 0.75rem; margin-bottom: 10px; text-transform: uppercase;">Thành phần chính</div>
-    <div class="menu-item ai-menu active-menu" id="nav-ai" onclick="switchView('ai')">✨ AI Phân Tích & Đọc File</div>
-
-    <div style="color: var(--text-dim); font-size: 0.75rem; margin-top: 20px; margin-bottom: 10px; text-transform: uppercase;">Công cụ thủ công</div>
-    <div class="menu-item" id="nav-main" onclick="switchView('main')">🔍 Trình Quét Mò HEX</div>
+    <div style="position: absolute; bottom: 20px; left: 25px; font-size: 0.7rem; color: var(--text-dim);">
+        CRE: <span style="color:var(--success)">VuTungIOS</span>
+    </div>
 </div>
 
 <div id="guideModal" class="guide-modal">
     <div class="guide-content">
-        <button class="guide-close-icon" onclick="closeGuide()">×</button>
-        <div class="guide-title">📖 Thông Tin Cập Nhật</div>
-        <div class="guide-text">
-            Chào mừng bạn! Tính năng mới nhất:
-            <ul style="padding-left: 20px; margin: 10px 0;">
-                <li><b>AI Thông Minh</b> đã được đặt làm trang chủ.</li>
-                <li>Hỗ trợ cho AI <b>đọc file Dylib/Txt</b> để quét từ khoá tự động.</li>
-                <li>Mở menu (☰) góc phải để dùng Tool Quét Mò thủ công.</li>
-<li>Lưu ý: AI Chỉ Là Bản Beta Khá Nhiều Lỗi</li>
-            </ul>
-        </div>
-        <a href="https://drive.google.com/file/d/1fVLr7iWZl-spYPBEPO_6niwpfWpO4hwK/view?usp=drivesdk" target="_blank" class="btn-video">
-            ▶ Xem Video Hướng Dẫn
+        <h2 style="color: var(--accent); margin-top: 0;">THÔNG BÁO</h2>
+        <p style="font-size: 0.85rem; color: #ccc; line-height: 1.6;">Đã Update Thêm Nhiều Chức Năng Khác</p>
+        
+        <a href="https://drive.google.com/file/d/1fVLr7iWZl-spYPBEPO_6niwpfWpO4hwK/view?usp=drivesdk" target="_blank" class="btn btn-video">
+            🎬 XEM VIDEO HƯỚNG DẪN
         </a>
+        
+        <button class="btn btn-primary" style="margin-top: 20px;" onclick="startApp()">Xác Nhận</button>
     </div>
 </div>
 
 <div class="app-wrapper">
     <header class="app-header">
-        <div class="brand">
-            <div class="brand-icon" id="headerIcon"></div>
-            <div class="brand-name" id="headerTitle">AI HEX (BETA)</div>
-        </div>
-        <div class="header-actions">
-            <button class="menu-btn" onclick="toggleMenu()">&#9776;</button>
-        </div>
+        <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+        <div style="font-weight: 800; font-size: 0.8rem; letter-spacing: 1px;" id="currentTabTitle">Check HEX</div>
+        <div id="fileInfo" style="font-size: 0.6rem; color: var(--accent); display:none;">Đã Có File</div>
     </header>
 
-    <div id="aiView">
-        <div class="ai-header">
-            <div class="ai-icon">🎶</div>
-            <div class="ai-desc">Trợ lý AI phân tích cấu trúc Game/App Mod. Hỗ trợ dự đoán mã HEX, chuỗi Text hoặc quét trực tiếp nội dung file.</div>
-        </div>
-
-        <div class="ai-input-box">
-            <textarea id="aiInput" placeholder="Nhập mã HEX (BETA)"></textarea>
-            <div class="ai-btn-group">
-                <input type="file" id="aiFileInput" hidden>
-                <button class="ai-btn ai-btn-file" onclick="document.getElementById('aiFileInput').click()">📁 Đưa File Cho AI</button>
-            </div>
-        </div>
-
-        <div class="ai-chat-box" id="aiChatBox">
-            <div class="ai-message">Xin chào! Tôi là AI Assistant. Bạn có thể nhập mã HEX/String hoặc <b>Tải File Lên</b> để tôi tự động quét các cấu trúc Menu/Hack nghi ngờ nhé!</div>
-        </div>
-    </div>
-
-    <div id="mainView">
+    <section id="scanTab" class="section active">
         <div id="dropZone" onclick="document.getElementById('fileInput').click()">
             <div style="font-size: 2rem; margin-bottom: 10px;">📄</div>
-            <div style="font-weight: 600;">Chạm để chọn File Quét</div>
-            <div style="font-size: 0.8rem; color: #666; margin-top: 5px;">Hỗ trợ mọi định dạng (Dylib, Hex, Txt...)</div>
+            <div style="font-weight: 700;">CHỌN FILE</div>
             <input type="file" id="fileInput" hidden>
         </div>
-        
-        <div style="text-align:center; padding: 0 20px;">
-            <div id="fileInfo" style="display:none; color: var(--accent); font-size:0.9rem; margin-bottom: 10px;"></div>
-        </div>
 
-        <div class="control-panel">
-            <div class="input-group">
-                <div class="mode-row">
-                    <select id="scanMode">
-                        <option value="text">Mã(STRING)</option>
-                        <option value="hex">HEX</option>
-                    </select>
-                </div>
-                <input type="text" id="queryInput" placeholder="Nhập dữ liệu cần mò...">
+        <div class="input-group" style="margin-top: 15px;">
+            <div style="display: flex; gap: 10px;">
+                <select id="scanMode" style="width: 40%;">
+                    <option value="text">STRING</option>
+                    <option value="hex">HEX</option>
+                </select>
+                <input type="text" id="queryInput" placeholder="Nhập mã...">
             </div>
-            <button class="scan-btn" onclick="startDeepScan()">MÒ MÃ</button>
         </div>
+        <button class="btn btn-primary" onclick="startDeepScan()">MÒ MÃ</button>
         
         <div class="progress-container" id="progressContainer">
             <div class="progress-bar" id="progressBar"></div>
         </div>
 
-        <div class="results-container" id="resultsArea">
-            <div style="text-align: center; color: #444; padding-top: 50px;">
-                Chọn file và nhập dữ liệu để bắt đầu quét.
-            </div>
-        </div>
-    </div>
+        <div id="resultsArea" style="margin-top: 15px; max-height: 400px; overflow-y: auto;"></div>
+    </section>
 
+    <section id="editTab" class="section">
+        <div class="input-group">
+            <label>Tên File khi nhập</label>
+            <input type="text" id="newFileName" placeholder="Nhập tên mới">
+        </div>
+        <div class="input-group">
+            <label>Địa chỉ Offset</label>
+            <input type="text" id="patchOffset" placeholder="0x...">
+        </div>
+        <div class="input-group">
+            <label>Mã HEX mới</label>
+            <input type="text" id="patchValue" placeholder=" Nhập">
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <button class="btn" style="background: var(--warning); color:#000;" onclick="downloadFile()">TẢI FILE</button>
+        </div>
+    </section>
+
+    <section id="textToHexTab" class="section">
+        <div class="input-group">
+            <label>Nhập chữ (Text)</label>
+            <textarea id="textInput" placeholder="Ví dụ: VuTungIOS" oninput="convertToHex()"></textarea>
+        </div>
+        <div class="input-group">
+            <label>Kết quả mã HEX</label>
+            <textarea id="hexOutput" readonly style="color:var(--success)"></textarea>
+        </div>
+        <button class="btn btn-primary" onclick="copyHexOutput()">SAO CHÉP MÃ HEX</button>
+    </section>
 </div>
 
 <script>
-    // --- KHỞI TẠO & MODAL ---
-    document.addEventListener("DOMContentLoaded", () => {
-        setTimeout(() => { document.getElementById('guideModal').classList.add('show'); }, 500);
-    });
+    let fileBuffer = null;
+    let fileName = "";
+    let isScanning = false;
 
-    function closeGuide() { document.getElementById('guideModal').classList.remove('show'); }
+    function startApp() {
+        const music = document.getElementById('bgMusic');
+        music.play().catch(e => {});
+        document.getElementById('guideModal').classList.remove('show');
+    }
+    window.onload = () => setTimeout(() => document.getElementById('guideModal').classList.add('show'), 100);
 
-    // --- LOGIC MENU & CHUYỂN TRANG ---
     function toggleMenu() {
-        document.getElementById('sidebar').classList.toggle('active');
+        document.getElementById('sideMenu').classList.toggle('active');
         document.getElementById('menuOverlay').classList.toggle('active');
     }
 
-    function switchView(viewName) {
-        const isAI = viewName === 'ai';
-        
-        // Đổi hiển thị container
-        document.getElementById('aiView').style.display = isAI ? 'block' : 'none';
-        document.getElementById('mainView').style.display = isAI ? 'none' : 'block';
-        
-        // Đổi màu header
-        document.getElementById('headerIcon').style.background = isAI ? 'var(--ai-color)' : 'var(--accent)';
-        document.getElementById('headerIcon').style.boxShadow = isAI ? '0 0 10px var(--ai-glow)' : '0 0 10px var(--accent-glow)';
-        document.getElementById('headerTitle').textContent = isAI ? 'AI HEX PREDICTOR' : 'TOOL MÒ HEX';
-        
-        // Đổi trạng thái menu
-        document.getElementById('nav-ai').classList.toggle('active-menu', isAI);
-        document.getElementById('nav-main').classList.toggle('active-menu', !isAI);
-        
-        toggleMenu(); // Đóng menu
+    function switchTab(tabId, btn) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        btn.classList.add('active');
+        document.getElementById('currentTabTitle').textContent = btn.innerText.replace(/[^\w\s]/gi, '').trim();
+        toggleMenu();
     }
-
-    // ========================================================
-    // --- LOGIC AI (VIEW 1): PHÂN TÍCH TEXT & ĐỌC FILE ---
-    // ========================================================
-    
-    // 1. Phân tích Text/Hex thủ công
-    function processAIPrediction() {
-        const input = document.getElementById('aiInput').value.trim();
-        if (!input) return;
-
-        const chatBox = document.getElementById('aiChatBox');
-        chatBox.innerHTML += `<div class="user-message">${escapeHtml(input)}</div>`;
-        document.getElementById('aiInput').value = ''; 
-        
-        appendAITypingAndRespond(chatBox, "✨ AI đang phân tích chuỗi...", () => analyzeHexWithFakeAI(input));
-    }
-
-    // 2. AI Đọc file khi được tải lên
-    document.getElementById('aiFileInput').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        const chatBox = document.getElementById('aiChatBox');
-        chatBox.innerHTML += `<div class="user-message">📁 Gửi file: <b>${file.name}</b> (${formatBytes(file.size)})</div>`;
-        
-        // Reset file input để có thể chọn lại file đó nếu cần
-        this.value = '';
-
-        appendAITypingAndRespond(chatBox, "🔍 AI đang quét nội dung file để tìm cấu trúc...", () => {
-            return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.onload = function(evt) {
-                    const buffer = new Uint8Array(evt.target.result);
-                    const result = analyzeFileWithAI(file.name, buffer);
-                    resolve(result);
-                };
-                reader.readAsArrayBuffer(file);
-            });
-        });
-    });
-
-    // Hàm tạo hiệu ứng "AI đang gõ"
-    function appendAITypingAndRespond(chatBox, typingMsg, logicFunc) {
-        const typingId = "typing-" + Date.now();
-        chatBox.innerHTML += `<div class="ai-message ai-typing" id="${typingId}">${typingMsg}</div>`;
-        chatBox.scrollTop = chatBox.scrollHeight;
-
-        setTimeout(async () => {
-            document.getElementById(typingId).remove();
-            // Xử lý cả function đồng bộ và bất đồng bộ (Promise)
-            const aiResponse = await logicFunc(); 
-            chatBox.innerHTML += `<div class="ai-message">${aiResponse}</div>`;
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }, 1500); // Trễ 1.5s tạo cảm giác AI đang nghĩ
-    }
-
-    // Thuật toán AI phân tích File
-    function analyzeFileWithAI(fileName, buffer) {
-        // Quét khoảng 500KB đầu tiên để không làm đơ trình duyệt trên đt
-        const scanLimit = Math.min(buffer.length, 500000); 
-        let asciiExtract = "";
-        
-        for(let i = 0; i < scanLimit; i++) {
-            const byte = buffer[i];
-            if (byte >= 32 && byte <= 126) {
-                asciiExtract += String.fromCharCode(byte);
-            }
-        }
-        const lowerAscii = asciiExtract.toLowerCase();
-
-        // Từ khóa Heuristics
-        const keywords = ['menu', 'mod', 'hack', 'cheat', 'vip', 'god', 'speed', 'offset', 'ui_'];
-        let found = [];
-        
-        keywords.forEach(kw => {
-            if (lowerAscii.includes(kw)) found.push(kw);
-        });
-
-        let res = `🔹 <b>Báo cáo File:</b> ${escapeHtml(fileName)}<br>`;
-        if (found.length > 0) {
-            res += `🔹 <b>Phát hiện Pattern:</b> File này chứa các từ khoá nghi ngờ: <b style="color:var(--success)">[${found.join(', ')}]</b>.<br>`;
-            res += `🔹 <b>Đánh giá AI:</b> Khả năng cao chứa cấu trúc điều khiển Menu hoặc Function Hack. Bạn hãy vào <b style="color:var(--accent)">☰ Menu -> Trình Quét Mò HEX</b>, dán các từ khoá này vào ô 'Mã(STRING)' để mò ra Offset chính xác của chúng nhé!`;
-        } else {
-            if (fileName.endsWith('.dylib')) {
-                res += `🔹 <b>Đánh giá AI:</b> Không tìm thấy String Mod rõ ràng ở phần đầu Dylib này. File có thể đã bị mã hoá (Obfuscation) hoặc các chức năng được viết bằng cấu trúc ẩn. Hãy cung cấp mã HEX cụ thể để tôi check tay.`;
-            } else {
-                res += `🔹 <b>Đánh giá AI:</b> File trông khá 'sạch'. Không tìm thấy chuỗi Menu cơ bản.`;
-            }
-        }
-        return res;
-    }
-
-    // Thuật toán AI phân tích Text/Hex
-    function analyzeHexWithFakeAI(text) {
-        let response = "";
-        const lowerText = text.toLowerCase();
-        const cleanHex = lowerText.replace(/[^0-9a-f]/g, '');
-
-        if (cleanHex === "c0035fd6") {
-            response += "🔹 <b>Nhận diện HEX:</b> Lệnh <b>RET</b> (Return) ARM64.<br>🔹 <b>Công dụng:</b> Vô hiệu hóa hàm (trả về void).";
-        } else if (cleanHex === "1f2003d5") {
-            response += "🔹 <b>Nhận diện HEX:</b> Lệnh <b>NOP</b> (No Operation).<br>🔹 <b>Công dụng:</b> Dùng để bỏ qua/xóa lệnh check VIP/Anti-cheat.";
-        } else if (cleanHex === "000080d2" || cleanHex === "e003271e") {
-             response += "🔹 <b>Nhận diện HEX:</b> Lệnh Return <b>False</b> (Hoặc gán 0).<br>🔹 <b>Công dụng:</b> Thường dùng ép điều kiện bool trả về sai.";
-        } else if (lowerText.includes("menu") || lowerText.includes("ui") || lowerText.includes("panel")) {
-            response += "🔹 <b>Phân tích chuỗi:</b> Tìm thấy từ khóa UI/Menu.<br>🔹 <b>Đánh giá:</b> Đây là Text hiển thị. Dùng <b>Trình Quét Mò HEX</b> tìm Offset của nó để tra ngược (XREF) ra hàm bool chính.";
-        } else {
-            let isHexLike = /^[0-9a-fA-F\s]+$/.test(text);
-            if (isHexLike && cleanHex.length >= 8) {
-                response += "🔹 <b>Phân tích:</b> Mã này không nằm trong từ điển phổ biến của tôi.<br>🔹 <b>Gợi ý:</b> Cần disassembler (IDA) để dịch ngược xem nó là LDR, STR hay BL.";
-            } else {
-                response += "🔹 <b>Phân tích:</b> Dữ liệu chưa đủ rõ ràng để suy luận cấu trúc ARM64. Hãy thử nhập mã HEX cụ thể hơn.";
-            }
-        }
-        return response;
-    }
-
-    // ========================================================
-    // --- LOGIC TOOL MÒ HEX GỐC (VIEW 2) ---
-    // ========================================================
-    let mainFileBuffer = null;
-    let isScanning = false;
 
     document.getElementById('fileInput').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (!file) return;
-
+        fileName = file.name;
+        document.getElementById('newFileName').value = "VuTung_" + fileName;
         const reader = new FileReader();
-        reader.onload = function(evt) {
-            mainFileBuffer = new Uint8Array(evt.target.result);
-            document.getElementById('dropZone').style.display = 'none';
-            const info = document.getElementById('fileInfo');
-            info.style.display = 'block';
-            info.textContent = `Đang quét file: ${file.name} (${formatBytes(file.size)})`;
-            
-            document.getElementById('resultsArea').innerHTML = `
-                <div style="text-align: center; color: var(--accent); padding-top: 50px;">
-                    File đã load xong!<br>Nhập chuỗi/mã Hex vào ô và nhấn MÒ MÃ.
-                </div>`;
+        reader.onload = (evt) => {
+            fileBuffer = new Uint8Array(evt.target.result);
+            document.getElementById('fileInfo').style.display = 'block';
+            document.getElementById('dropZone').innerHTML = `<div style="color:var(--success)">✅ NHẬP FILE THÀNH CÔNG</div>`;
         };
         reader.readAsArrayBuffer(file);
     });
 
+    // --- HEX SCANNER LOGIC ---
     function startDeepScan() {
-        if (!mainFileBuffer) return alert("Bạn chưa chọn file ở phần Trình Quét Mò HEX!");
+        if (!fileBuffer) return alert("Chưa Nhập file!");
         if (isScanning) return;
-
         const queryStr = document.getElementById('queryInput').value.trim();
         const mode = document.getElementById('scanMode').value;
-        if (!queryStr) return alert("Chưa nhập nội dung tìm kiếm!");
+        if (!queryStr) return;
 
         let targetBytes;
         try {
@@ -452,31 +258,29 @@
                 targetBytes = new TextEncoder().encode(queryStr);
             } else {
                 const cleanHex = queryStr.replace(/[^0-9A-Fa-f]/g, '');
-                if (cleanHex.length % 2 !== 0) throw new Error("Mã Hex lẻ ký tự!");
-                targetBytes = new Uint8Array(cleanHex.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+                targetBytes = new Uint8Array(cleanHex.match(/.{1,2}/g).map(b => parseInt(b, 16)));
             }
-        } catch (e) {
-            return alert("Lỗi định dạng đầu vào: " + e.message);
-        }
+        } catch (e) { return alert("Lỗi HEX!"); }
 
         isScanning = true;
         const resultsArea = document.getElementById('resultsArea');
-        resultsArea.innerHTML = '<div class="result-header">Đang chạy Deep Scan...</div>';
+        resultsArea.innerHTML = '<div>Đang quét...</div>';
         const progressBar = document.getElementById('progressBar');
-        document.getElementById('progressContainer').style.display = 'block';
-        
+        const progressContainer = document.getElementById('progressContainer');
+        progressContainer.style.display = 'block';
+
         let foundCount = 0;
         let resultsHTML = '';
-        const chunkSize = 500000; 
+        const chunkSize = 800000;
         let currentIndex = 0;
 
         function scanChunk() {
-            const end = Math.min(currentIndex + chunkSize, mainFileBuffer.length);
+            const end = Math.min(currentIndex + chunkSize, fileBuffer.length);
             for (let i = currentIndex; i < end; i++) {
-                if (i + targetBytes.length > mainFileBuffer.length) break;
+                if (i + targetBytes.length > fileBuffer.length) break;
                 let match = true;
                 for (let j = 0; j < targetBytes.length; j++) {
-                    if (mainFileBuffer[i + j] !== targetBytes[j]) { match = false; break; }
+                    if (fileBuffer[i + j] !== targetBytes[j]) { match = false; break; }
                 }
                 if (match) {
                     foundCount++;
@@ -484,54 +288,91 @@
                 }
             }
             currentIndex = end;
-            progressBar.style.width = Math.round((currentIndex / mainFileBuffer.length) * 100) + "%";
-            
-            if (currentIndex < mainFileBuffer.length) setTimeout(scanChunk, 0);
-            else finishScan(foundCount, resultsHTML);
+            progressBar.style.width = Math.round((currentIndex / fileBuffer.length) * 100) + "%";
+            if (currentIndex < fileBuffer.length) {
+                setTimeout(scanChunk, 0);
+            } else {
+                isScanning = false;
+                resultsArea.innerHTML = foundCount === 0 ? "Không có kết quả." : resultsHTML;
+                setTimeout(() => progressContainer.style.display = 'none', 1000);
+            }
         }
-        scanChunk(); 
-    }
-
-    function finishScan(count, html) {
-        isScanning = false;
-        const limitMsg = count > 50 ? `<br><small>(Hiện 50/${count} kết quả)</small>` : '';
-        const header = `<div class="result-header"><span style="color: var(--success)">HOÀN TẤT</span><span>TÌM THẤY: <b style="color: #fff">${count}</b>${limitMsg}</span></div>`;
-        document.getElementById('resultsArea').innerHTML = count === 0 ? header + `<div style="text-align:center; padding:20px; color:#666">Không tìm thấy mã khớp.</div>` : header + html;
-        setTimeout(() => { document.getElementById('progressContainer').style.display = 'none'; }, 1000);
+        scanChunk();
     }
 
     function renderResultCard(index, len) {
-        const offsetHex = "0x" + index.toString(16).toUpperCase().padStart(8, '0');
+        const offsetHex = "0x" + index.toString(16).toUpperCase();
         const startCtx = Math.max(0, index - 4);
-        const endCtx = Math.min(mainFileBuffer.length, index + len + 4);
-        const contextBytes = mainFileBuffer.slice(startCtx, endCtx);
+        const endCtx = Math.min(fileBuffer.length, index + len + 4);
+        const contextBytes = fileBuffer.slice(startCtx, endCtx);
         let hexStr = "", asciiStr = "";
         for(let i=0; i < contextBytes.length; i++) {
             const byte = contextBytes[i];
             const realIdx = startCtx + i;
-            const isMatch = (realIdx >= index && realIdx < index + len);
             const h = byte.toString(16).toUpperCase().padStart(2,'0');
             const a = (byte >= 32 && byte <= 126) ? String.fromCharCode(byte) : '.';
-            if(isMatch) {
-                hexStr += `<span style="color: var(--success); font-weight:bold">${h}</span> `;
-                asciiStr += `<span style="color: var(--success); font-weight:bold">${escapeHtml(a)}</span>`;
+            if(realIdx >= index && realIdx < index + len) {
+                hexStr += `<span style="color:var(--success); font-weight:bold">${h}</span> `;
+                asciiStr += `<span style="color:var(--success); font-weight:bold">${a}</span>`;
             } else {
-                hexStr += `<span style="color: #555">${h}</span> `;
-                asciiStr += escapeHtml(a);
+                hexStr += `<span style="color:#555">${h}</span> `;
+                asciiStr += a;
             }
         }
-        return `<div class="result-card"><span class="offset-label">OFFSET: ${offsetHex}</span><div class="hex-preview">${hexStr}</div><div class="ascii-preview">${asciiStr}</div></div>`;
+        return `<div class="result-card" onclick="copyToEdit('${offsetHex}')">
+            <span class="offset-label">OFFSET: ${offsetHex}</span>
+            <div class="hex-preview">${hexStr}</div>
+            <div class="ascii-preview">${asciiStr}</div>
+        </div>`;
     }
 
-    function formatBytes(bytes) {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    function copyToEdit(off) {
+        document.getElementById('patchOffset').value = off;
+        alert("Đã chuyển địa chỉ sang Tab Sửa!");
+        switchTab('editTab', document.querySelectorAll('.menu-item')[1]);
     }
 
-    function escapeHtml(text) { return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+    // --- CHỮ SANG HEX LOGIC ---
+    function convertToHex() {
+        const text = document.getElementById('textInput').value;
+        if (!text) {
+            document.getElementById('hexOutput').value = "";
+            return;
+        }
+        const encoder = new TextEncoder();
+        const bytes = encoder.encode(text);
+        const hex = Array.from(bytes).map(b => b.toString(16).toUpperCase().padStart(2, '0')).join(' ');
+        document.getElementById('hexOutput').value = hex;
+    }
+
+    function copyHexOutput() {
+        const out = document.getElementById('hexOutput');
+        if (!out.value) return;
+        out.select();
+        document.execCommand('copy');
+        alert("Đã sao chép mã HEX!");
+    }
+
+    // --- PATCH & DOWNLOAD ---
+    function applyPatch() {
+        if (!fileBuffer) return alert("Chưa Nhập file!");
+        const off = parseInt(document.getElementById('patchOffset').value, 16);
+        const hex = document.getElementById('patchValue').value.replace(/\s/g, '');
+        if (isNaN(off) || !hex) return alert("Nhập đủ Offset và HEX!");
+        const newBytes = new Uint8Array(hex.match(/.{1,2}/g).map(b => parseInt(b, 16)));
+        for (let i = 0; i < newBytes.length; i++) { fileBuffer[off + i] = newBytes[i]; }
+        alert("Đã lưu mã!");
+    }
+
+    function downloadFile() {
+        if (!fileBuffer) return;
+        const blob = new Blob([fileBuffer]);
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = document.getElementById('newFileName').value || "Edited";
+        a.click();
+    }
 </script>
 
 </body>
