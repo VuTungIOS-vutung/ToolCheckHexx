@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>VuTungToolHEX | Mobile Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050505;
+            --panel: #111;
+            --accent: #00d2ff;
+            --accent-glow: rgba(0, 210, 255, 0.4);
+            --text-main: #f0f0f0;
+            --text-dim: #888;
+            --border: #333;
+            --success: #00ff9d;
+        }
+
+        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            background: var(--bg);
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0;
+            padding: 20px 10px;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Container Chính */
+        .app-wrapper {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Header */
+        .app-header {
+            padding: 20px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.03), transparent);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand { display: flex; align-items: center; gap: 10px; }
+        .brand-icon { width: 24px; height: 24px; background: var(--accent); border-radius: 6px; box-shadow: 0 0 10px var(--accent-glow); }
+        .brand-name { font-weight: 700; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* File Info Bar */
+        .file-info {
+            font-size: 0.75rem;
+            color: var(--accent);
+            background: rgba(0, 210, 255, 0.1);
+            padding: 5px 10px;
+            border-radius: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 150px;
+        }
+
+        /* Control Panel - Mobile First Design */
+        .control-panel {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: #000;
+            padding: 15px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+        }
+
+        .mode-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        select, input {
+            background: #1a1a1a;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 12px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+        
+        select { flex: 1; -webkit-appearance: none; background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2300d2ff%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); background-repeat: no-repeat; background-position: right 10px top 50%; background-size: 10px; }
+        
+        input { width: 100%; border: 1px solid var(--border); transition: border 0.3s; }
+        input:focus { border-color: var(--accent); }
+
+        .scan-btn {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 1rem;
+            text-transform: uppercase;
+            cursor: pointer;
+            box-shadow: 0 4px 15px var(--accent-glow);
+            active: transform: scale(0.98);
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            height: 4px;
+            background: #222;
+            width: 100%;
+            margin-top: 5px;
+            display: none;
+        }
+        .progress-bar {
+            height: 100%;
+            background: var(--success);
+            width: 0%;
+            transition: width 0.1s linear;
+            box-shadow: 0 0 10px var(--success);
+        }
+
+        /* Results Area */
+        .results-container {
+            padding: 0 20px 20px;
+            background: #080808;
+            min-height: 300px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .result-header {
+            margin-top: 15px;
+            margin-bottom: 15px;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .result-card {
+            background: #111;
+            border: 1px solid #222;
+            border-left: 3px solid var(--accent);
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+        }
+
+        .offset-label { color: var(--text-dim); font-size: 0.7rem; display: block; margin-bottom: 5px; }
+        .hex-preview { color: var(--accent); word-break: break-all; margin-bottom: 5px; }
+        .ascii-preview { color: #fff; opacity: 0.7; font-size: 0.75rem; word-break: break-all; background: #222; padding: 5px; border-radius: 4px; }
+
+        /* File Upload Zone */
+        #dropZone {
+            border: 2px dashed #333;
+            padding: 40px 20px;
+            text-align: center;
+            margin: 20px;
+            border-radius: 16px;
+            cursor: pointer;
+        }
+        #dropZone.active { border-color: var(--accent); background: rgba(0, 210, 255, 0.05); }
+
+        /* Media Queries cho Desktop/Tablet */
+        @media (min-width: 768px) {
+            .control-panel { flex-direction: row; align-items: flex-end; }
+            .input-group { flex: 1; flex-direction: row; align-items: center; }
+            .mode-row { min-width: 150px; }
+            .scan-btn { width: auto; padding: 0 40px; height: 50px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-wrapper">
+    <header class="app-header">
+        <div class="brand">
+            <div class="brand-icon"></div>
+            <div class="brand-name">Tool Check Mã HEX(cre:VuTungIOS)</div>
+        </div>
+        <div id="fileInfo" class="file-info" style="display:none;"></div>
+    </header>
+
+    <div id="dropZone" onclick="document.getElementById('fileInput').click()">
+        <div style="font-size: 2rem; margin-bottom: 10px;">📂</div>
+        <div style="font-weight: 600;">Chạm để chọn File</div>
+        <div style="font-size: 0.8rem; color: #666; margin-top: 5px;">Hỗ trợ mọi định dạng (Dylib, Hex,Txt...)</div>
+        <input type="file" id="fileInput" hidden>
+    </div>
+
+    <div class="control-panel">
+        <div class="input-group">
+            <div class="mode-row">
+                <select id="scanMode">
+                    <option value="text">Mã(STRING)</option>
+                    <option value="hex">HEX</option>
+                </select>
+            </div>
+            <input type="text" id="queryInput" placeholder="Nhập dữ liệu...">
+        </div>
+        <button class="scan-btn" onclick="startDeepScan()">MÒ</button>
+    </div>
+    
+    <div class="progress-container" id="progressContainer">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <div class="results-container" id="resultsArea">
+        <div style="text-align: center; color: #444; padding-top: 50px;">
+            Sẵn sàng quét dữ liệu.
+        </div>
+    </div>
+</div>
+
+<script>
+    let fileBuffer = null;
+    let isScanning = false;
+
+    // --- XỬ LÝ FILE ---
+    document.getElementById('fileInput').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            fileBuffer = new Uint8Array(evt.target.result);
+            
+            // UI Update
+            document.getElementById('dropZone').style.display = 'none';
+            const info = document.getElementById('fileInfo');
+            info.style.display = 'block';
+            info.textContent = `${file.name} (${formatBytes(file.size)})`;
+            
+            document.getElementById('resultsArea').innerHTML = `
+                <div style="text-align: center; color: var(--accent); padding-top: 50px;">
+                    File: ${formatBytes(file.size)}<br>
+                    Sẵn sàng Check.
+                </div>`;
+        };
+        reader.readAsArrayBuffer(file);
+    });
+
+    // --- HÀM QUÉT CHUYÊN SÂU (ASYNC/NON-BLOCKING) ---
+    async function startDeepScan() {
+        if (!fileBuffer) return alert("Chưa chọn file!");
+        if (isScanning) return;
+
+        const queryStr = document.getElementById('queryInput').value.trim();
+        const mode = document.getElementById('scanMode').value;
+        if (!queryStr) return alert("Chưa nhập nội dung tìm kiếm!");
+
+        // 1. Chuẩn bị dữ liệu tìm kiếm (Byte array)
+        let targetBytes;
+        try {
+            if (mode === 'text') {
+                targetBytes = new TextEncoder().encode(queryStr);
+            } else {
+                // Tự động làm sạch mã Hex (xóa khoảng trắng, 0x)
+                const cleanHex = queryStr.replace(/[^0-9A-Fa-f]/g, '');
+                if (cleanHex.length % 2 !== 0) throw new Error("Mã Hex lẻ ký tự!");
+                targetBytes = new Uint8Array(cleanHex.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+            }
+        } catch (e) {
+            return alert("Lỗi định dạng đầu vào: " + e.message);
+        }
+
+        // 2. Thiết lập giao diện quét
+        isScanning = true;
+        const resultsArea = document.getElementById('resultsArea');
+        resultsArea.innerHTML = '<div class="result-header">Đang khởi tạo Deep Scan...</div>';
+        const progressBar = document.getElementById('progressBar');
+        const progressContainer = document.getElementById('progressContainer');
+        progressContainer.style.display = 'block';
+        
+        let foundCount = 0;
+        let resultsHTML = '';
+        const chunkSize = 500000; // Quét 500KB mỗi lần để không đơ máy
+        let currentIndex = 0;
+
+        // 3. Hàm quét từng đoạn (Chunk Loop)
+        function scanChunk() {
+            const end = Math.min(currentIndex + chunkSize, fileBuffer.length);
+            
+            // Tìm kiếm trong đoạn này
+            // Lưu ý: Cần quét lùi lại length-1 để không mất dữ liệu nằm giữa 2 chunk
+            let searchLimit = end;
+            if (end < fileBuffer.length) searchLimit += targetBytes.length; 
+
+            for (let i = currentIndex; i < end; i++) {
+                // Kiểm tra giới hạn mảng
+                if (i + targetBytes.length > fileBuffer.length) break;
+
+                // So sánh Byte-by-Byte (Chính xác 100%)
+                let match = true;
+                for (let j = 0; j < targetBytes.length; j++) {
+                    if (fileBuffer[i + j] !== targetBytes[j]) {
+                        match = false;
+                        break;
+                    }
+                }
+
+                if (match) {
+                    foundCount++;
+                    if (foundCount <= 50) { // Chỉ render 50 kết quả đầu để mượt UI
+                        resultsHTML += renderResultCard(i, targetBytes.length);
+                    }
+                }
+            }
+
+            // Cập nhật tiến trình
+            currentIndex = end;
+            const percent = Math.round((currentIndex / fileBuffer.length) * 100);
+            progressBar.style.width = percent + "%";
+
+            // Tiếp tục hoặc Kết thúc
+            if (currentIndex < fileBuffer.length) {
+                // Sử dụng requestAnimationFrame hoặc setTimeout để UI không bị đơ
+                setTimeout(scanChunk, 0);
+            } else {
+                finishScan(foundCount, resultsHTML);
+            }
+        }
+
+        scanChunk(); // Bắt đầu chạy
+    }
+
+    function finishScan(count, html) {
+        isScanning = false;
+        const resultsArea = document.getElementById('resultsArea');
+        const limitMsg = count > 50 ? `<br><small>(Chỉ hiển thị 50/${count} kết quả để tối ưu hiệu năng)</small>` : '';
+        
+        const header = `
+            <div class="result-header">
+                <span style="color: var(--success)">✔ HOÀN TẤT</span>
+                <span>TÌM THẤY: <b style="color: #fff">${count}</b> VỊ TRÍ${limitMsg}</span>
+            </div>
+        `;
+        
+        if (count === 0) {
+            resultsArea.innerHTML = header + `<div style="text-align:center; padding:20px; color:#666">Không tìm thấy dữ liệu khớp 100%.</div>`;
+        } else {
+            resultsArea.innerHTML = header + html;
+        }
+        
+        setTimeout(() => {
+            document.getElementById('progressContainer').style.display = 'none';
+            document.getElementById('progressBar').style.width = '0%';
+        }, 1000);
+    }
+
+    // --- RENDER KẾT QUẢ ---
+    function renderResultCard(index, len) {
+        const offsetHex = "0x" + index.toString(16).toUpperCase().padStart(8, '0');
+        const offsetDec = index.toString();
+        
+        // Lấy ngữ cảnh: 4 byte trước + match + 4 byte sau
+        const startCtx = Math.max(0, index - 4);
+        const endCtx = Math.min(fileBuffer.length, index + len + 4);
+        const contextBytes = fileBuffer.slice(startCtx, endCtx);
+        
+        let hexStr = "";
+        let asciiStr = "";
+
+        // Highlight logic đơn giản cho Hex
+        for(let i=0; i < contextBytes.length; i++) {
+            const byte = contextBytes[i];
+            const realIdx = startCtx + i;
+            const isMatch = (realIdx >= index && realIdx < index + len);
+            
+            const h = byte.toString(16).toUpperCase().padStart(2,'0');
+            const a = (byte >= 32 && byte <= 126) ? String.fromCharCode(byte) : '.';
+
+            if(isMatch) {
+                hexStr += `<span style="color: var(--success); font-weight:bold">${h}</span> `;
+                asciiStr += `<span style="color: var(--success); font-weight:bold">${escapeHtml(a)}</span>`;
+            } else {
+                hexStr += `<span style="color: #555">${h}</span> `;
+                asciiStr += escapeHtml(a);
+            }
+        }
+
+        return `
+            <div class="result-card">
+                <span class="offset-label">OFFSET: ${offsetHex} (Dec: ${offsetDec})</span>
+                <div class="hex-preview">${hexStr}</div>
+                <div class="ascii-preview">${asciiStr}</div>
+            </div>
+        `;
+    }
+
+    function formatBytes(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    function escapeHtml(text) {
+        return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+</script>
+
+</body>
+</html>
