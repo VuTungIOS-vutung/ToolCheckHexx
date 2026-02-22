@@ -56,7 +56,6 @@
         .brand-icon { width: 24px; height: 24px; background: var(--accent); border-radius: 6px; box-shadow: 0 0 10px var(--accent-glow); }
         .brand-name { font-weight: 700; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* File Info Bar */
         .file-info {
             font-size: 0.75rem;
             color: var(--accent);
@@ -69,7 +68,6 @@
             max-width: 150px;
         }
 
-        /* Control Panel - Mobile First Design */
         .control-panel {
             padding: 20px;
             display: flex;
@@ -118,10 +116,9 @@
             text-transform: uppercase;
             cursor: pointer;
             box-shadow: 0 4px 15px var(--accent-glow);
-            active: transform: scale(0.98);
         }
+        .scan-btn:active { transform: scale(0.98); }
 
-        /* Progress Bar */
         .progress-container {
             height: 4px;
             background: #222;
@@ -137,7 +134,6 @@
             box-shadow: 0 0 10px var(--success);
         }
 
-        /* Results Area */
         .results-container {
             padding: 0 20px 20px;
             background: #080808;
@@ -170,7 +166,6 @@
         .hex-preview { color: var(--accent); word-break: break-all; margin-bottom: 5px; }
         .ascii-preview { color: #fff; opacity: 0.7; font-size: 0.75rem; word-break: break-all; background: #222; padding: 5px; border-radius: 4px; }
 
-        /* File Upload Zone */
         #dropZone {
             border: 2px dashed #333;
             padding: 40px 20px;
@@ -178,10 +173,52 @@
             margin: 20px;
             border-radius: 16px;
             cursor: pointer;
+            transition: 0.3s;
         }
-        #dropZone.active { border-color: var(--accent); background: rgba(0, 210, 255, 0.05); }
+        #dropZone:hover, #dropZone.active { border-color: var(--accent); background: rgba(0, 210, 255, 0.05); }
 
-        /* Media Queries cho Desktop/Tablet */
+        /* MODAL STYLE - LUÔN HIỆN KHI LOAD */
+        .guide-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(4px);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 9999; opacity: 0; pointer-events: none; transition: 0.3s ease;
+        }
+        .guide-modal.show { opacity: 1; pointer-events: all; }
+        
+        .guide-content {
+            background: var(--panel); border: 1px solid var(--accent);
+            padding: 25px; border-radius: 16px; width: 90%; max-width: 400px;
+            position: relative; box-shadow: 0 10px 30px var(--accent-glow);
+            transform: translateY(-20px); transition: 0.3s ease;
+        }
+        .guide-modal.show .guide-content { transform: translateY(0); }
+
+        .guide-close-icon {
+            position: absolute; top: 10px; right: 15px;
+            background: none; border: none; color: var(--text-dim);
+            font-size: 1.5rem; cursor: pointer; transition: 0.2s;
+        }
+        .guide-close-icon:hover { color: #ff4d4d; } /* Chuyển màu đỏ khi hover để dễ thấy */
+
+        .guide-title {
+            color: var(--accent); font-weight: 700; font-size: 1.2rem;
+            margin-bottom: 15px; text-align: center; text-transform: uppercase;
+        }
+        
+        .guide-text { font-size: 0.85rem; color: #ccc; line-height: 1.6; margin-bottom: 20px; }
+        .guide-text ul { padding-left: 20px; margin: 10px 0; }
+        .guide-text li { margin-bottom: 8px; }
+
+        .btn-video {
+            display: flex; justify-content: center; align-items: center; gap: 8px;
+            background: rgba(0, 210, 255, 0.1); border: 1px solid var(--accent);
+            color: var(--accent); padding: 12px; border-radius: 10px;
+            text-decoration: none; font-weight: 700; font-size: 0.9rem;
+            transition: 0.3s;
+        }
+        .btn-video:hover { background: var(--accent); color: #000; }
+
         @media (min-width: 768px) {
             .control-panel { flex-direction: row; align-items: flex-end; }
             .input-group { flex: 1; flex-direction: row; align-items: center; }
@@ -191,6 +228,23 @@
     </style>
 </head>
 <body>
+
+<div id="guideModal" class="guide-modal">
+    <div class="guide-content">
+        <button class="guide-close-icon" onclick="closeGuide()">×</button>
+        <div class="guide-title">📖 Hướng Dẫn Sử Dụng</div>
+        <div class="guide-text">
+            Chào mừng bạn đến với Tool Check HEX!
+            <ul>
+                <li> Đây Là Web Giúp Bạn Mò Mã HEX Đơn Giản Và Dễ Dàng Để Sửa Đổi Mã Hex (Sẽ Có Những Update Ngon) Ae Nào Không Biết Xem Video Nha</li>
+            </ul>
+        </div>
+        
+        <a href="https://drive.google.com/file/d/1fVLr7iWZl-spYPBEPO_6niwpfWpO4hwK/view?usp=drivesdk" target="_blank" class="btn-video">
+            ▶ Xem Video Hướng Dẫn
+        </a>
+    </div>
+</div>
 
 <div class="app-wrapper">
     <header class="app-header">
@@ -202,9 +256,9 @@
     </header>
 
     <div id="dropZone" onclick="document.getElementById('fileInput').click()">
-        <div style="font-size: 2rem; margin-bottom: 10px;">📂</div>
+        <div style="font-size: 2rem; margin-bottom: 10px;">📄</div>
         <div style="font-weight: 600;">Chạm để chọn File</div>
-        <div style="font-size: 0.8rem; color: #666; margin-top: 5px;">Hỗ trợ mọi định dạng (Dylib, Hex,Txt...)</div>
+        <div style="font-size: 0.8rem; color: #666; margin-top: 5px;">Hỗ trợ mọi định dạng (Dylib, Hex, Txt...)</div>
         <input type="file" id="fileInput" hidden>
     </div>
 
@@ -233,10 +287,25 @@
 </div>
 
 <script>
+    // --- LOGIC HIỂN THỊ POPUP - LUÔN HIỆN KHI VÀO WEB ---
+    document.addEventListener("DOMContentLoaded", () => {
+        // Xóa sạch bộ nhớ cũ nếu có để tránh xung đột
+        localStorage.removeItem('hideGuideUntil');
+        
+        // Luôn hiện sau 500ms
+        setTimeout(() => {
+            document.getElementById('guideModal').classList.add('show');
+        }, 500);
+    });
+
+    function closeGuide() {
+        document.getElementById('guideModal').classList.remove('show');
+    }
+
+    // --- XỬ LÝ FILE & TOOL ---
     let fileBuffer = null;
     let isScanning = false;
 
-    // --- XỬ LÝ FILE ---
     document.getElementById('fileInput').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (!file) return;
@@ -244,8 +313,6 @@
         const reader = new FileReader();
         reader.onload = function(evt) {
             fileBuffer = new Uint8Array(evt.target.result);
-            
-            // UI Update
             document.getElementById('dropZone').style.display = 'none';
             const info = document.getElementById('fileInfo');
             info.style.display = 'block';
@@ -253,14 +320,12 @@
             
             document.getElementById('resultsArea').innerHTML = `
                 <div style="text-align: center; color: var(--accent); padding-top: 50px;">
-                    File: ${formatBytes(file.size)}<br>
-                    Sẵn sàng Check.
+                    File đã sẵn sàng!<br>Nhập nội dung và nhấn MÒ.
                 </div>`;
         };
         reader.readAsArrayBuffer(file);
     });
 
-    // --- HÀM QUÉT CHUYÊN SÂU (ASYNC/NON-BLOCKING) ---
     async function startDeepScan() {
         if (!fileBuffer) return alert("Chưa chọn file!");
         if (isScanning) return;
@@ -269,13 +334,11 @@
         const mode = document.getElementById('scanMode').value;
         if (!queryStr) return alert("Chưa nhập nội dung tìm kiếm!");
 
-        // 1. Chuẩn bị dữ liệu tìm kiếm (Byte array)
         let targetBytes;
         try {
             if (mode === 'text') {
                 targetBytes = new TextEncoder().encode(queryStr);
             } else {
-                // Tự động làm sạch mã Hex (xóa khoảng trắng, 0x)
                 const cleanHex = queryStr.replace(/[^0-9A-Fa-f]/g, '');
                 if (cleanHex.length % 2 !== 0) throw new Error("Mã Hex lẻ ký tự!");
                 targetBytes = new Uint8Array(cleanHex.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
@@ -284,7 +347,6 @@
             return alert("Lỗi định dạng đầu vào: " + e.message);
         }
 
-        // 2. Thiết lập giao diện quét
         isScanning = true;
         const resultsArea = document.getElementById('resultsArea');
         resultsArea.innerHTML = '<div class="result-header">Đang khởi tạo Deep Scan...</div>';
@@ -294,23 +356,13 @@
         
         let foundCount = 0;
         let resultsHTML = '';
-        const chunkSize = 500000; // Quét 500KB mỗi lần để không đơ máy
+        const chunkSize = 500000; 
         let currentIndex = 0;
 
-        // 3. Hàm quét từng đoạn (Chunk Loop)
         function scanChunk() {
             const end = Math.min(currentIndex + chunkSize, fileBuffer.length);
-            
-            // Tìm kiếm trong đoạn này
-            // Lưu ý: Cần quét lùi lại length-1 để không mất dữ liệu nằm giữa 2 chunk
-            let searchLimit = end;
-            if (end < fileBuffer.length) searchLimit += targetBytes.length; 
-
             for (let i = currentIndex; i < end; i++) {
-                // Kiểm tra giới hạn mảng
                 if (i + targetBytes.length > fileBuffer.length) break;
-
-                // So sánh Byte-by-Byte (Chính xác 100%)
                 let match = true;
                 for (let j = 0; j < targetBytes.length; j++) {
                     if (fileBuffer[i + j] !== targetBytes[j]) {
@@ -318,78 +370,46 @@
                         break;
                     }
                 }
-
                 if (match) {
                     foundCount++;
-                    if (foundCount <= 50) { // Chỉ render 50 kết quả đầu để mượt UI
+                    if (foundCount <= 50) { 
                         resultsHTML += renderResultCard(i, targetBytes.length);
                     }
                 }
             }
-
-            // Cập nhật tiến trình
             currentIndex = end;
             const percent = Math.round((currentIndex / fileBuffer.length) * 100);
             progressBar.style.width = percent + "%";
-
-            // Tiếp tục hoặc Kết thúc
             if (currentIndex < fileBuffer.length) {
-                // Sử dụng requestAnimationFrame hoặc setTimeout để UI không bị đơ
                 setTimeout(scanChunk, 0);
             } else {
                 finishScan(foundCount, resultsHTML);
             }
         }
-
-        scanChunk(); // Bắt đầu chạy
+        scanChunk(); 
     }
 
     function finishScan(count, html) {
         isScanning = false;
         const resultsArea = document.getElementById('resultsArea');
-        const limitMsg = count > 50 ? `<br><small>(Chỉ hiển thị 50/${count} kết quả để tối ưu hiệu năng)</small>` : '';
-        
-        const header = `
-            <div class="result-header">
-                <span style="color: var(--success)">✔ HOÀN TẤT</span>
-                <span>TÌM THẤY: <b style="color: #fff">${count}</b> VỊ TRÍ${limitMsg}</span>
-            </div>
-        `;
-        
-        if (count === 0) {
-            resultsArea.innerHTML = header + `<div style="text-align:center; padding:20px; color:#666">Không tìm thấy dữ liệu khớp 100%.</div>`;
-        } else {
-            resultsArea.innerHTML = header + html;
-        }
-        
-        setTimeout(() => {
-            document.getElementById('progressContainer').style.display = 'none';
-            document.getElementById('progressBar').style.width = '0%';
-        }, 1000);
+        const limitMsg = count > 50 ? `<br><small>(Chỉ hiện 50/${count} kết quả)</small>` : '';
+        const header = `<div class="result-header"><span style="color: var(--success)">XONG</span><span>TÌM THẤY: <b style="color: #fff">${count}</b> VỊ TRÍ${limitMsg}</span></div>`;
+        resultsArea.innerHTML = count === 0 ? header + `<div style="text-align:center; padding:20px; color:#666">Không có kết quả.</div>` : header + html;
+        setTimeout(() => { document.getElementById('progressContainer').style.display = 'none'; }, 1000);
     }
 
-    // --- RENDER KẾT QUẢ ---
     function renderResultCard(index, len) {
         const offsetHex = "0x" + index.toString(16).toUpperCase().padStart(8, '0');
-        const offsetDec = index.toString();
-        
-        // Lấy ngữ cảnh: 4 byte trước + match + 4 byte sau
         const startCtx = Math.max(0, index - 4);
         const endCtx = Math.min(fileBuffer.length, index + len + 4);
         const contextBytes = fileBuffer.slice(startCtx, endCtx);
-        
-        let hexStr = "";
-        let asciiStr = "";
-
-        // Highlight logic đơn giản cho Hex
+        let hexStr = "", asciiStr = "";
         for(let i=0; i < contextBytes.length; i++) {
             const byte = contextBytes[i];
             const realIdx = startCtx + i;
             const isMatch = (realIdx >= index && realIdx < index + len);
-            
             const h = byte.toString(16).toUpperCase().padStart(2,'0');
             const a = (byte >= 32 && byte <= 126) ? String.fromCharCode(byte) : '.';
-
             if(isMatch) {
                 hexStr += `<span style="color: var(--success); font-weight:bold">${h}</span> `;
                 asciiStr += `<span style="color: var(--success); font-weight:bold">${escapeHtml(a)}</span>`;
@@ -398,14 +418,7 @@
                 asciiStr += escapeHtml(a);
             }
         }
-
-        return `
-            <div class="result-card">
-                <span class="offset-label">OFFSET: ${offsetHex} (Dec: ${offsetDec})</span>
-                <div class="hex-preview">${hexStr}</div>
-                <div class="ascii-preview">${asciiStr}</div>
-            </div>
-        `;
+        return `<div class="result-card"><span class="offset-label">OFFSET: ${offsetHex}</span><div class="hex-preview">${hexStr}</div><div class="ascii-preview">${asciiStr}</div></div>`;
     }
 
     function formatBytes(bytes) {
