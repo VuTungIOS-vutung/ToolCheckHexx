@@ -3,377 +3,248 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VuTungTool PRO</title>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@300;500;700;800&display=swap" rel="stylesheet">
+    <title>ToolNgonVN</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #050505;
-            --panel: #0d0d0f;
+            --bg: #050508;
+            --panel: rgba(15, 15, 20, 0.8);
             --accent: #00d2ff;
-            --accent-glow: rgba(0, 210, 255, 0.4);
-            --text-main: #f0f0f0;
-            --text-dim: #71717a;
-            --border: #27272a;
+            --accent-2: #3a7bd5;
+            --text: #ffffff;
+            --dim: #94a3b8;
+            --border: rgba(255, 255, 255, 0.08);
             --success: #00ff9d;
-            --warning: #f59e0b;
         }
 
         * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
-        
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+
         body {
-            background: var(--bg);
-            color: var(--text-main);
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            margin: 0; padding: 10px; min-height: 100vh;
-            overflow-x: hidden;
+            background: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden;
         }
 
-        /* MENU 3 GẠCH */
-        .side-menu {
-            position: fixed; top: 0; left: -280px; width: 280px; height: 100%;
-            background: var(--panel); border-right: 1px solid var(--border);
-            z-index: 10000; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); padding: 25px;
+        /* --- SIDEBAR --- */
+        .sidebar {
+            position: fixed; top: 0; left: -280px; width: 260px; height: 100%;
+            background: #0a0a0f; border-right: 1px solid var(--border);
+            z-index: 1000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); padding: 40px 20px;
         }
-        .side-menu.active { left: 0; box-shadow: 15px 0 40px rgba(0,0,0,0.7); }
-        .menu-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.7);
-            z-index: 9999; display: none; backdrop-filter: blur(4px);
-        }
-        .menu-overlay.active { display: block; }
+        .sidebar.active { left: 0; box-shadow: 20px 0 50px rgba(0,0,0,0.8); }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 999; display: none; backdrop-filter: blur(4px); }
+        .overlay.active { display: block; }
 
         .menu-item {
-            padding: 14px; border-radius: 12px; margin-bottom: 8px;
-            cursor: pointer; transition: 0.2s; font-weight: 700;
-            display: flex; align-items: center; gap: 12px; color: var(--text-dim);
+            padding: 16px; border-radius: 14px; margin-bottom: 10px; cursor: pointer;
+            font-weight: 700; color: var(--dim); display: flex; align-items: center; gap: 12px; transition: 0.3s;
         }
-        .menu-item.active { background: var(--accent); color: #000; }
+        .menu-item.active { background: rgba(0,210,255,0.1); color: var(--accent); border: 1px solid rgba(0,210,255,0.2); }
 
-        /* CONTAINER */
-        .app-wrapper {
-            width: 100%; max-width: 700px; margin: 0 auto;
-            background: var(--panel); border: 1px solid var(--border);
-            border-radius: 24px; overflow: hidden; position: relative;
-        }
-
-        .app-header {
-            padding: 15px 20px; border-bottom: 1px solid var(--border);
-            display: flex; align-items: center; justify-content: space-between;
-        }
-
-        .menu-toggle { background: none; border: none; color: var(--accent); font-size: 1.6rem; cursor: pointer; }
-
-        .section { display: none; padding: 20px; animation: fadeIn 0.3s ease; }
-        .section.active { display: block; }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* INPUTS */
-        .input-group { background: #000; padding: 15px; border-radius: 16px; border: 1px solid var(--border); margin-bottom: 15px; }
-        label { display: block; font-size: 0.7rem; color: var(--accent); margin-bottom: 8px; font-weight: 800; text-transform: uppercase; }
-        input, select, textarea {
-            width: 100%; background: #16161a; border: 1px solid var(--border);
-            color: #fff; padding: 12px; border-radius: 10px; font-family: 'JetBrains Mono';
-        }
-        textarea { height: 120px; font-size: 0.8rem; resize: none; }
-
-        .btn {
-            width: 100%; padding: 16px; border-radius: 14px; border: none;
-            font-weight: 800; text-transform: uppercase; cursor: pointer; transition: 0.2s;
-        }
-        .btn-primary { background: var(--accent); color: #000; box-shadow: 0 4px 15px var(--accent-glow); }
-        .btn-video { background: #ef4444; color: #fff; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; font-size: 0.8rem; }
-
-        /* HEX SCANNER RESULTS (FULL BẢN GỐC) */
-        .progress-container { height: 4px; background: #222; width: 100%; display: none; margin-bottom: 10px; }
-        .progress-bar { height: 100%; background: var(--success); width: 0%; transition: width 0.1s linear; }
+        /* --- MAIN --- */
+        .wrapper { max-width: 650px; margin: 20px auto; padding: 0 15px; }
+        .glass-panel { background: var(--panel); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 28px; overflow: hidden; }
         
-        .result-card {
-            background: #111; border: 1px solid #222; border-left: 3px solid var(--accent);
-            padding: 12px; margin-bottom: 10px; border-radius: 8px; font-family: 'JetBrains Mono'; font-size: 0.75rem;
-            cursor: pointer;
-        }
-        .offset-label { color: var(--text-dim); font-size: 0.65rem; display: block; margin-bottom: 4px; }
-        .hex-preview { color: var(--accent); word-break: break-all; margin-bottom: 4px; }
-        .ascii-preview { color: #fff; opacity: 0.6; font-size: 0.7rem; background: #1a1a1a; padding: 4px; border-radius: 4px; }
+        .header { padding: 20px 25px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+        .btn-menu { background: none; border: none; color: var(--accent); font-size: 1.8rem; cursor: pointer; }
 
-        /* GUIDE MODAL */
-        .guide-modal {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.9);
-            display: flex; justify-content: center; align-items: center; z-index: 99999;
-            opacity: 0; pointer-events: none; transition: 0.3s;
-        }
-        .guide-modal.show { opacity: 1; pointer-events: all; }
-        .guide-content { background: var(--panel); padding: 30px; border-radius: 24px; width: 90%; max-width: 400px; border: 1px solid var(--border); text-align: center; }
+        .section { display: none; padding: 25px; animation: fadeInUp 0.4s ease; }
+        .section.active { display: block; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        #dropZone { border: 2px dashed var(--border); padding: 40px; text-align: center; border-radius: 20px; cursor: pointer; }
+        /* --- UI ELEMENTS --- */
+        .input-box { background: rgba(0,0,0,0.4); padding: 18px; border-radius: 20px; border: 1px solid var(--border); margin-bottom: 20px; }
+        label { font-size: 0.7rem; color: var(--accent); font-weight: 800; display: block; margin-bottom: 8px; text-transform: uppercase; }
+        input, select { width: 100%; background: #000; border: 1px solid #222; color: #fff; padding: 14px; border-radius: 12px; font-family: 'JetBrains Mono'; }
+        .btn-action { width: 100%; padding: 18px; border-radius: 16px; border: none; font-weight: 800; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #000; cursor: pointer; }
+
+        /* --- RESULT CARDS --- */
+        .card { background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 15px; border-radius: 15px; margin-bottom: 12px; font-family: 'JetBrains Mono'; }
+        .card b { color: var(--success); }
+        .preview-box { background: #000; padding: 10px; border-radius: 8px; font-size: 0.75rem; margin-top: 8px; word-break: break-all; }
+
+        /* --- START MODAL --- */
+        #startModal { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        
+        /* Gmail Content */
+        #mailView { background: #fff; color: #000; padding: 20px; border-radius: 20px; margin-top: 20px; display: none; overflow: auto; max-height: 400px; }
     </style>
 </head>
 <body>
 
-<audio id="bgMusic" loop preload="auto">
-    <source src="https://files.catbox.moe/97p99b.mp3" type="audio/mpeg">
+<audio id="player" loop>
+    <source src="https://drive.google.com/file/d/1aYWqtVf86VcncXlW97U8aWBTAnEETE30/view?usp=drivesdk" type="audio/mpeg">
 </audio>
 
-<div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
-
-<div class="side-menu" id="sideMenu">
-    <div style="font-weight: 900; color: var(--accent); margin-bottom: 30px; font-size: 1.2rem;">TOOL NGON</div>
-    <div class="menu-item active" onclick="switchTab('scanTab', this)"><span>🔍</span> MÒ MÃ HEX </div>
-    <div class="menu-item" onclick="switchTab('editTab', this)"><span>🛠️</span> SỬA MÃ & ĐỔI TÊN<p>Wait Update</p></div>
-    <div class="menu-item" onclick="switchTab('textToHexTab', this)"><span>⌨️</span> CHỮ SANG HEX
-<p>Wait Update</p></div>
-    
-    <div style="position: absolute; bottom: 20px; left: 25px; font-size: 0.7rem; color: var(--text-dim);">
-        CRE: <span style="color:var(--success)">VuTungIOS</span>
+<div id="startModal">
+    <div style="text-align: center;">
+        <h1 style="color: var(--accent); font-weight: 900;">Thông Báo Update</h1>
+        <p style="color: var(--dim);">Hệ thống đã sẵn sàng</p>
+        <button class="btn-action" onclick="launch()">Đóng</button>
     </div>
 </div>
 
-<div id="guideModal" class="guide-modal">
-    <div class="guide-content">
-        <h2 style="color: var(--accent); margin-top: 0;">THÔNG BÁO</h2>
-        <p style="font-size: 0.85rem; color: #ccc; line-height: 1.6;">Đã Update Thêm Nhiều Chức Năng Khác</p>
-        
-        <a href="https://drive.google.com/file/d/1fVLr7iWZl-spYPBEPO_6niwpfWpO4hwK/view?usp=drivesdk" target="_blank" class="btn btn-video">
-            🎬 XEM VIDEO HƯỚNG DẪN
-        </a>
-        
-        <button class="btn btn-primary" style="margin-top: 20px;" onclick="startApp()">Xác Nhận</button>
-    </div>
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+<div class="sidebar" id="sidebar">
+    <h2 style="color: var(--accent); text-align: center; margin-bottom: 30px;">MENU</h2>
+    <div class="menu-item active" onclick="tab('scanTab', this)">🔍MÃ HEX</div>
+    <div class="menu-item" onclick="tab('gmailTab', this)">📧 GMAIL 15 PHÚT</div>
 </div>
 
-<div class="app-wrapper">
-    <header class="app-header">
-        <button class="menu-toggle" onclick="toggleMenu()">☰</button>
-        <div style="font-weight: 800; font-size: 0.8rem; letter-spacing: 1px;" id="currentTabTitle">Check HEX</div>
-        <div id="fileInfo" style="font-size: 0.6rem; color: var(--accent); display:none;">Đã Có File</div>
-    </header>
+<div class="wrapper">
+    <div class="glass-panel">
+        <header class="header">
+            <button class="btn-menu" onclick="toggleMenu()">🎶</button>
+            <div id="headerTitle" style="font-weight: 800;">MÒ MÃ HEX </div>
+            <div id="fileStatus" style="width:10px; height:10px; background:#333; border-radius:50%;"></div>
+        </header>
 
-    <section id="scanTab" class="section active">
-        <div id="dropZone" onclick="document.getElementById('fileInput').click()">
-            <div style="font-size: 2rem; margin-bottom: 10px;">📄</div>
-            <div style="font-weight: 700;">CHỌN FILE</div>
-            <input type="file" id="fileInput" hidden>
-        </div>
-
-        <div class="input-group" style="margin-top: 15px;">
-            <div style="display: flex; gap: 10px;">
-                <select id="scanMode" style="width: 40%;">
-                    <option value="text">STRING</option>
-                    <option value="hex">HEX</option>
-                </select>
-                <input type="text" id="queryInput" placeholder="Nhập mã...">
+        <section id="scanTab" class="section active">
+            <div id="drop" onclick="document.getElementById('fileIn').click()" style="border: 2px dashed var(--accent); padding: 35px; text-align: center; border-radius: 20px; background: rgba(0,210,255,0.02); cursor: pointer;">
+                <div style="font-size: 2rem;">📁</div>
+                <div id="fn" style="font-weight: 800; margin-top: 10px;">Nhập File</div>
+                <input type="file" id="fileIn" hidden>
             </div>
-        </div>
-        <button class="btn btn-primary" onclick="startDeepScan()">MÒ MÃ</button>
-        
-        <div class="progress-container" id="progressContainer">
-            <div class="progress-bar" id="progressBar"></div>
-        </div>
 
-        <div id="resultsArea" style="margin-top: 15px; max-height: 400px; overflow-y: auto;"></div>
-    </section>
+            <div class="input-box" style="margin-top: 20px;">
+                <label>Dữ liệu cần tìm (Text/Hex)</label>
+                <div style="display: flex; gap: 10px;">
+                    <select id="sMode" style="width: 100px;"><option value="text">TEXT</option><option value="hex">HEX</option></select>
+                    <input type="text" id="sQuery" placeholder="Nhập mã...">
+                </div>
+            </div>
+            <button class="btn-action" onclick="runScan()">🚀</button>
+            <div id="sResults" style="margin-top: 20px; max-height: 400px; overflow-y: auto;"></div>
+        </section>
 
-    <section id="editTab" class="section">
-        <div class="input-group">
-            <label>Tên File khi nhập</label>
-            <input type="text" id="newFileName" placeholder="Nhập tên mới">
-        </div>
-        <div class="input-group">
-            <label>Địa chỉ Offset</label>
-            <input type="text" id="patchOffset" placeholder="0x...">
-        </div>
-        <div class="input-group">
-            <label>Mã HEX mới</label>
-            <input type="text" id="patchValue" placeholder=" Nhập">
-        </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-            <button class="btn" style="background: var(--warning); color:#000;" onclick="downloadFile()">TẢI FILE</button>
-        </div>
-    </section>
-
-    <section id="textToHexTab" class="section">
-        <div class="input-group">
-            <label>Nhập chữ (Text)</label>
-            <textarea id="textInput" placeholder="Ví dụ: VuTungIOS" oninput="convertToHex()"></textarea>
-        </div>
-        <div class="input-group">
-            <label>Kết quả mã HEX</label>
-            <textarea id="hexOutput" readonly style="color:var(--success)"></textarea>
-        </div>
-        <button class="btn btn-primary" onclick="copyHexOutput()">SAO CHÉP MÃ HEX</button>
-    </section>
+        <section id="gmailTab" class="section">
+            <div class="input-box" style="text-align: center;">
+                <label>EMAIL Clone</label>
+                <div id="eAddr" style="font-size: 1.2rem; font-weight: 900; color: var(--accent); margin: 15px 0;">Đang tạo...</div>
+                <button class="btn-action" style="padding: 10px; width: 120px;" onclick="copyE()">COPY</button>
+            </div>
+            <button class="btn-action" onclick="genE()" style="background: #111; color: var(--accent); border: 1px solid var(--accent); margin-bottom: 20px;">🔄 ĐỔI EMAIL</button>
+            
+            <div id="eInbox"></div>
+            <div id="mailView"></div>
+        </section>
+    </div>
 </div>
 
 <script>
-    let fileBuffer = null;
-    let fileName = "";
-    let isScanning = false;
+    let buffer = null, mU = "", mD = "", mTick;
 
-    function startApp() {
-        const music = document.getElementById('bgMusic');
-        music.play().catch(e => {});
-        document.getElementById('guideModal').classList.remove('show');
+    function launch() {
+        document.getElementById('player').play();
+        document.getElementById('startModal').style.display = 'none';
     }
-    window.onload = () => setTimeout(() => document.getElementById('guideModal').classList.add('show'), 100);
 
     function toggleMenu() {
-        document.getElementById('sideMenu').classList.toggle('active');
-        document.getElementById('menuOverlay').classList.toggle('active');
+        document.getElementById('sidebar').classList.toggle('active');
+        document.getElementById('overlay').classList.toggle('active');
     }
 
-    function switchTab(tabId, btn) {
+    function tab(id, el) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
-        btn.classList.add('active');
-        document.getElementById('currentTabTitle').textContent = btn.innerText.replace(/[^\w\s]/gi, '').trim();
+        document.getElementById(id).classList.add('active');
+        el.classList.add('active');
+        document.getElementById('headerTitle').innerText = el.innerText.substring(2);
+        if(id === 'gmailTab' && !mU) genE();
         toggleMenu();
     }
 
-    document.getElementById('fileInput').addEventListener('change', function(e) {
+    // --- HEX LOGIC ---
+    document.getElementById('fileIn').onchange = (e) => {
         const file = e.target.files[0];
-        if (!file) return;
-        fileName = file.name;
-        document.getElementById('newFileName').value = "VuTung_" + fileName;
         const reader = new FileReader();
-        reader.onload = (evt) => {
-            fileBuffer = new Uint8Array(evt.target.result);
-            document.getElementById('fileInfo').style.display = 'block';
-            document.getElementById('dropZone').innerHTML = `<div style="color:var(--success)">✅ NHẬP FILE THÀNH CÔNG</div>`;
+        reader.onload = (ev) => {
+            buffer = new Uint8Array(ev.target.result);
+            document.getElementById('fn').innerText = "✅ " + file.name.toUpperCase();
+            document.getElementById('fileStatus').style.background = "var(--success)";
         };
         reader.readAsArrayBuffer(file);
-    });
+    };
 
-    // --- HEX SCANNER LOGIC ---
-    function startDeepScan() {
-        if (!fileBuffer) return alert("Chưa Nhập file!");
-        if (isScanning) return;
-        const queryStr = document.getElementById('queryInput').value.trim();
-        const mode = document.getElementById('scanMode').value;
-        if (!queryStr) return;
+    function runScan() {
+        if(!buffer) return alert("Chưa nạp file!");
+        const q = document.getElementById('sQuery').value;
+        const mode = document.getElementById('sMode').value;
+        const res = document.getElementById('sResults');
+        res.innerHTML = "Đang quét...";
 
-        let targetBytes;
+        let target;
         try {
-            if (mode === 'text') {
-                targetBytes = new TextEncoder().encode(queryStr);
-            } else {
-                const cleanHex = queryStr.replace(/[^0-9A-Fa-f]/g, '');
-                targetBytes = new Uint8Array(cleanHex.match(/.{1,2}/g).map(b => parseInt(b, 16)));
-            }
-        } catch (e) { return alert("Lỗi HEX!"); }
+            if(mode === 'text') target = new TextEncoder().encode(q);
+            else target = new Uint8Array(q.replace(/\s/g,'').match(/.{1,2}/g).map(b => parseInt(b, 16)));
+        } catch(e) { return alert("Lỗi định dạng!"); }
 
-        isScanning = true;
-        const resultsArea = document.getElementById('resultsArea');
-        resultsArea.innerHTML = '<div>Đang quét...</div>';
-        const progressBar = document.getElementById('progressBar');
-        const progressContainer = document.getElementById('progressContainer');
-        progressContainer.style.display = 'block';
-
-        let foundCount = 0;
-        let resultsHTML = '';
-        const chunkSize = 800000;
-        let currentIndex = 0;
-
-        function scanChunk() {
-            const end = Math.min(currentIndex + chunkSize, fileBuffer.length);
-            for (let i = currentIndex; i < end; i++) {
-                if (i + targetBytes.length > fileBuffer.length) break;
-                let match = true;
-                for (let j = 0; j < targetBytes.length; j++) {
-                    if (fileBuffer[i + j] !== targetBytes[j]) { match = false; break; }
+        let html = "";
+        for(let i=0; i < buffer.length - target.length; i++) {
+            let match = true;
+            for(let j=0; j < target.length; j++) if(buffer[i+j] !== target[j]) { match = false; break; }
+            if(match) {
+                const off = i.toString(16).toUpperCase();
+                // Preview fix: render sạch sẽ
+                let hexStr = "", asciiStr = "";
+                const start = Math.max(0, i-4), end = Math.min(buffer.length, i + target.length + 4);
+                for(let k=start; k<end; k++) {
+                    const b = buffer[k];
+                    const h = b.toString(16).toUpperCase().padStart(2,'0');
+                    const a = (b >= 32 && b <= 126) ? String.fromCharCode(b) : '.';
+                    if(k >= i && k < i+target.length) {
+                        hexStr += `<b style="color:var(--success)">${h}</b> `;
+                        asciiStr += `<b style="color:var(--success)">${a.replace(/</g,'&lt;')}</b>`;
+                    } else {
+                        hexStr += h + " ";
+                        asciiStr += a.replace(/</g,'&lt;');
+                    }
                 }
-                if (match) {
-                    foundCount++;
-                    if (foundCount <= 50) resultsHTML += renderResultCard(i, targetBytes.length);
-                }
-            }
-            currentIndex = end;
-            progressBar.style.width = Math.round((currentIndex / fileBuffer.length) * 100) + "%";
-            if (currentIndex < fileBuffer.length) {
-                setTimeout(scanChunk, 0);
-            } else {
-                isScanning = false;
-                resultsArea.innerHTML = foundCount === 0 ? "Không có kết quả." : resultsHTML;
-                setTimeout(() => progressContainer.style.display = 'none', 1000);
+                html += `<div class="card"><span>OFFSET: <b>0x${off}</b></span><div class="preview-box">${hexStr}<br>${asciiStr}</div></div>`;
+                if(html.length > 5000) break; 
             }
         }
-        scanChunk();
+        res.innerHTML = html || "Không thấy kết quả.";
     }
 
-    function renderResultCard(index, len) {
-        const offsetHex = "0x" + index.toString(16).toUpperCase();
-        const startCtx = Math.max(0, index - 4);
-        const endCtx = Math.min(fileBuffer.length, index + len + 4);
-        const contextBytes = fileBuffer.slice(startCtx, endCtx);
-        let hexStr = "", asciiStr = "";
-        for(let i=0; i < contextBytes.length; i++) {
-            const byte = contextBytes[i];
-            const realIdx = startCtx + i;
-            const h = byte.toString(16).toUpperCase().padStart(2,'0');
-            const a = (byte >= 32 && byte <= 126) ? String.fromCharCode(byte) : '.';
-            if(realIdx >= index && realIdx < index + len) {
-                hexStr += `<span style="color:var(--success); font-weight:bold">${h}</span> `;
-                asciiStr += `<span style="color:var(--success); font-weight:bold">${a}</span>`;
-            } else {
-                hexStr += `<span style="color:#555">${h}</span> `;
-                asciiStr += a;
-            }
+    // --- GMAIL LOGIC ---
+    async function genE() {
+        const r = await fetch('https://www.1secmail.com/api/v1/?action=genRandomMailbox&count=1');
+        const d = await r.json();
+        [mU, mD] = d[0].split('@');
+        document.getElementById('eAddr').innerText = d[0];
+        document.getElementById('eInbox').innerHTML = "<center><small>Đang đợi thư...</small></center>";
+        clearInterval(mTick);
+        mTick = setInterval(checkE, 5000);
+    }
+
+    async function checkE() {
+        const r = await fetch(`https://www.1secmail.com/api/v1/?action=getMessages&login=${mU}&domain=${mD}`);
+        const list = await r.json();
+        if(list.length > 0) {
+            document.getElementById('eInbox').innerHTML = list.map(m => `
+                <div class="card" onclick="readE(${m.id})" style="cursor:pointer; border-left:4px solid var(--accent)">
+                    <b>${m.subject}</b><br><small>${m.from}</small>
+                </div>
+            `).join('');
         }
-        return `<div class="result-card" onclick="copyToEdit('${offsetHex}')">
-            <span class="offset-label">OFFSET: ${offsetHex}</span>
-            <div class="hex-preview">${hexStr}</div>
-            <div class="ascii-preview">${asciiStr}</div>
-        </div>`;
     }
 
-    function copyToEdit(off) {
-        document.getElementById('patchOffset').value = off;
-        alert("Đã chuyển địa chỉ sang Tab Sửa!");
-        switchTab('editTab', document.querySelectorAll('.menu-item')[1]);
+    async function readE(id) {
+        const r = await fetch(`https://www.1secmail.com/api/v1/?action=readMessage&login=${mU}&domain=${mD}&id=${id}`);
+        const d = await r.json();
+        const v = document.getElementById('mailView');
+        v.style.display = 'block';
+        v.innerHTML = `<h3>${d.subject}</h3><hr>${d.htmlBody || d.body}`;
+        v.scrollIntoView({behavior:'smooth'});
     }
 
-    // --- CHỮ SANG HEX LOGIC ---
-    function convertToHex() {
-        const text = document.getElementById('textInput').value;
-        if (!text) {
-            document.getElementById('hexOutput').value = "";
-            return;
-        }
-        const encoder = new TextEncoder();
-        const bytes = encoder.encode(text);
-        const hex = Array.from(bytes).map(b => b.toString(16).toUpperCase().padStart(2, '0')).join(' ');
-        document.getElementById('hexOutput').value = hex;
-    }
-
-    function copyHexOutput() {
-        const out = document.getElementById('hexOutput');
-        if (!out.value) return;
-        out.select();
-        document.execCommand('copy');
-        alert("Đã sao chép mã HEX!");
-    }
-
-    // --- PATCH & DOWNLOAD ---
-    function applyPatch() {
-        if (!fileBuffer) return alert("Chưa Nhập file!");
-        const off = parseInt(document.getElementById('patchOffset').value, 16);
-        const hex = document.getElementById('patchValue').value.replace(/\s/g, '');
-        if (isNaN(off) || !hex) return alert("Nhập đủ Offset và HEX!");
-        const newBytes = new Uint8Array(hex.match(/.{1,2}/g).map(b => parseInt(b, 16)));
-        for (let i = 0; i < newBytes.length; i++) { fileBuffer[off + i] = newBytes[i]; }
-        alert("Đã lưu mã!");
-    }
-
-    function downloadFile() {
-        if (!fileBuffer) return;
-        const blob = new Blob([fileBuffer]);
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = document.getElementById('newFileName').value || "Edited";
-        a.click();
+    function copyE() {
+        navigator.clipboard.writeText(document.getElementById('eAddr').innerText);
+        alert("Đã copy!");
     }
 </script>
-
 </body>
 </html>
