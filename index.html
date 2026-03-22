@@ -1,250 +1,101 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ToolNgonVN</title>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg: #050508;
-            --panel: rgba(15, 15, 20, 0.8);
-            --accent: #00d2ff;
-            --accent-2: #3a7bd5;
-            --text: #ffffff;
-            --dim: #94a3b8;
-            --border: rgba(255, 255, 255, 0.08);
-            --success: #00ff9d;
-        }
-
-        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
-
-        body {
-            background: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif;
-            margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden;
-        }
-
-        /* --- SIDEBAR --- */
-        .sidebar {
-            position: fixed; top: 0; left: -280px; width: 260px; height: 100%;
-            background: #0a0a0f; border-right: 1px solid var(--border);
-            z-index: 1000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); padding: 40px 20px;
-        }
-        .sidebar.active { left: 0; box-shadow: 20px 0 50px rgba(0,0,0,0.8); }
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 999; display: none; backdrop-filter: blur(4px); }
-        .overlay.active { display: block; }
-
-        .menu-item {
-            padding: 16px; border-radius: 14px; margin-bottom: 10px; cursor: pointer;
-            font-weight: 700; color: var(--dim); display: flex; align-items: center; gap: 12px; transition: 0.3s;
-        }
-        .menu-item.active { background: rgba(0,210,255,0.1); color: var(--accent); border: 1px solid rgba(0,210,255,0.2); }
-
-        /* --- MAIN --- */
-        .wrapper { max-width: 650px; margin: 20px auto; padding: 0 15px; }
-        .glass-panel { background: var(--panel); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 28px; overflow: hidden; }
-        
-        .header { padding: 20px 25px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-        .btn-menu { background: none; border: none; color: var(--accent); font-size: 1.8rem; cursor: pointer; }
-
-        .section { display: none; padding: 25px; animation: fadeInUp 0.4s ease; }
-        .section.active { display: block; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* --- UI ELEMENTS --- */
-        .input-box { background: rgba(0,0,0,0.4); padding: 18px; border-radius: 20px; border: 1px solid var(--border); margin-bottom: 20px; }
-        label { font-size: 0.7rem; color: var(--accent); font-weight: 800; display: block; margin-bottom: 8px; text-transform: uppercase; }
-        input, select { width: 100%; background: #000; border: 1px solid #222; color: #fff; padding: 14px; border-radius: 12px; font-family: 'JetBrains Mono'; }
-        .btn-action { width: 100%; padding: 18px; border-radius: 16px; border: none; font-weight: 800; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #000; cursor: pointer; }
-
-        /* --- RESULT CARDS --- */
-        .card { background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 15px; border-radius: 15px; margin-bottom: 12px; font-family: 'JetBrains Mono'; }
-        .card b { color: var(--success); }
-        .preview-box { background: #000; padding: 10px; border-radius: 8px; font-size: 0.75rem; margin-top: 8px; word-break: break-all; }
-
-        /* --- START MODAL --- */
-        #startModal { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        
-        /* Gmail Content */
-        #mailView { background: #fff; color: #000; padding: 20px; border-radius: 20px; margin-top: 20px; display: none; overflow: auto; max-height: 400px; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Link Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
-<body>
-
-<audio id="player" loop>
-    <source src="https://drive.google.com/file/d/1aYWqtVf86VcncXlW97U8aWBTAnEETE30/view?usp=drivesdk" type="audio/mpeg">
-</audio>
-
-<div id="startModal">
-    <div style="text-align: center;">
-        <h1 style="color: var(--accent); font-weight: 900;">Thông Báo Update</h1>
-        <p style="color: var(--dim);">Hệ thống đã sẵn sàng</p>
-        <button class="btn-action" onclick="launch()">Đóng</button>
+<body class="dark-mode"> <div id="loader">
+        <div class="spinner"></div>
     </div>
-</div>
 
-<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+    <div class="background-elements">
+        <div class="gradient-sphere shape-1"></div>
+        <div class="gradient-sphere shape-2"></div>
+    </div>
 
-<div class="sidebar" id="sidebar">
-    <h2 style="color: var(--accent); text-align: center; margin-bottom: 30px;">MENU</h2>
-    <div class="menu-item active" onclick="tab('scanTab', this)">🔍MÃ HEX</div>
-    <div class="menu-item" onclick="tab('gmailTab', this)">📧 GMAIL 15 PHÚT</div>
-</div>
+    <div class="floating-controls">
+        <button id="theme-toggle" class="glass-btn"><i class="fa-solid fa-moon"></i></button>
+        <button id="music-toggle" class="glass-btn"><i class="fa-solid fa-music"></i></button>
+        <audio id="bg-music" src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3" loop></audio>
+    </div>
 
-<div class="wrapper">
-    <div class="glass-panel">
-        <header class="header">
-            <button class="btn-menu" onclick="toggleMenu()">🎶</button>
-            <div id="headerTitle" style="font-weight: 800;">MÒ MÃ HEX </div>
-            <div id="fileStatus" style="width:10px; height:10px; background:#333; border-radius:50%;"></div>
+    <main class="main-container fade-in">
+        
+        <header class="profile-section">
+            <div class="avatar-container">
+                <img src="https://api.dicebear.com/6.x/avataaars/svg?seed=Felix" alt="Profile Avatar" class="avatar">
+            </div>
+            <h1 class="name">Creator Name</h1>
+            <p class="bio">Digital Artist & Developer • Minimalist</p>
         </header>
 
-        <section id="scanTab" class="section active">
-            <div id="drop" onclick="document.getElementById('fileIn').click()" style="border: 2px dashed var(--accent); padding: 35px; text-align: center; border-radius: 20px; background: rgba(0,210,255,0.02); cursor: pointer;">
-                <div style="font-size: 2rem;">📁</div>
-                <div id="fn" style="font-weight: 800; margin-top: 10px;">Nhập File</div>
-                <input type="file" id="fileIn" hidden>
+        <section class="tools-section">
+            <div class="search-box glass-panel">
+                <i class="fa-solid fa-search"></i>
+                <input type="text" id="search-input" placeholder="Tìm kiếm link...">
             </div>
-
-            <div class="input-box" style="margin-top: 20px;">
-                <label>Dữ liệu cần tìm (Text/Hex)</label>
-                <div style="display: flex; gap: 10px;">
-                    <select id="sMode" style="width: 100px;"><option value="text">TEXT</option><option value="hex">HEX</option></select>
-                    <input type="text" id="sQuery" placeholder="Nhập mã...">
-                </div>
+            <div class="category-filters">
+                <button class="filter-btn active" data-filter="all">Tất cả</button>
+                <button class="filter-btn" data-filter="dev">Lập trình</button>
+                <button class="filter-btn" data-filter="social">Mạng xã hội</button>
             </div>
-            <button class="btn-action" onclick="runScan()">🚀</button>
-            <div id="sResults" style="margin-top: 20px; max-height: 400px; overflow-y: auto;"></div>
         </section>
 
-        <section id="gmailTab" class="section">
-            <div class="input-box" style="text-align: center;">
-                <label>EMAIL Clone</label>
-                <div id="eAddr" style="font-size: 1.2rem; font-weight: 900; color: var(--accent); margin: 15px 0;">Đang tạo...</div>
-                <button class="btn-action" style="padding: 10px; width: 120px;" onclick="copyE()">COPY</button>
+        <section class="links-grid" id="links-container">
+            <div class="link-card glass-panel" data-category="dev">
+                <div class="link-content">
+                    <div class="link-icon"><i class="fa-brands fa-github"></i></div>
+                    <div class="link-info">
+                        <h3>GitHub Workspace</h3>
+                        <p>Source code và các dự án mã nguồn mở.</p>
+                    </div>
+                </div>
+                <div class="link-actions">
+                    <button class="action-btn copy-btn" data-url="https://github.com"><i class="fa-regular fa-copy"></i></button>
+                    <a href="https://github.com" target="_blank" class="action-btn visit-btn"><i class="fa-solid fa-arrow-right"></i></a>
+                </div>
             </div>
-            <button class="btn-action" onclick="genE()" style="background: #111; color: var(--accent); border: 1px solid var(--accent); margin-bottom: 20px;">🔄 ĐỔI EMAIL</button>
+
+            <div class="link-card glass-panel" data-category="social">
+                <div class="link-content">
+                    <div class="link-icon" style="color: #00f3ff;"><i class="fa-brands fa-twitter"></i></div>
+                    <div class="link-info">
+                        <h3>Twitter / X</h3>
+                        <p>Cập nhật tin tức và bài viết mới nhất.</p>
+                    </div>
+                </div>
+                <div class="link-actions">
+                    <button class="action-btn copy-btn" data-url="https://twitter.com"><i class="fa-regular fa-copy"></i></button>
+                    <a href="https://twitter.com" target="_blank" class="action-btn visit-btn"><i class="fa-solid fa-arrow-right"></i></a>
+                </div>
+            </div>
             
-            <div id="eInbox"></div>
-            <div id="mailView"></div>
-        </section>
-    </div>
-</div>
-
-<script>
-    let buffer = null, mU = "", mD = "", mTick;
-
-    function launch() {
-        document.getElementById('player').play();
-        document.getElementById('startModal').style.display = 'none';
-    }
-
-    function toggleMenu() {
-        document.getElementById('sidebar').classList.toggle('active');
-        document.getElementById('overlay').classList.toggle('active');
-    }
-
-    function tab(id, el) {
-        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-        document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        el.classList.add('active');
-        document.getElementById('headerTitle').innerText = el.innerText.substring(2);
-        if(id === 'gmailTab' && !mU) genE();
-        toggleMenu();
-    }
-
-    // --- HEX LOGIC ---
-    document.getElementById('fileIn').onchange = (e) => {
-        const file = e.target.files[0];
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-            buffer = new Uint8Array(ev.target.result);
-            document.getElementById('fn').innerText = "✅ " + file.name.toUpperCase();
-            document.getElementById('fileStatus').style.background = "var(--success)";
-        };
-        reader.readAsArrayBuffer(file);
-    };
-
-    function runScan() {
-        if(!buffer) return alert("Chưa nạp file!");
-        const q = document.getElementById('sQuery').value;
-        const mode = document.getElementById('sMode').value;
-        const res = document.getElementById('sResults');
-        res.innerHTML = "Đang quét...";
-
-        let target;
-        try {
-            if(mode === 'text') target = new TextEncoder().encode(q);
-            else target = new Uint8Array(q.replace(/\s/g,'').match(/.{1,2}/g).map(b => parseInt(b, 16)));
-        } catch(e) { return alert("Lỗi định dạng!"); }
-
-        let html = "";
-        for(let i=0; i < buffer.length - target.length; i++) {
-            let match = true;
-            for(let j=0; j < target.length; j++) if(buffer[i+j] !== target[j]) { match = false; break; }
-            if(match) {
-                const off = i.toString(16).toUpperCase();
-                // Preview fix: render sạch sẽ
-                let hexStr = "", asciiStr = "";
-                const start = Math.max(0, i-4), end = Math.min(buffer.length, i + target.length + 4);
-                for(let k=start; k<end; k++) {
-                    const b = buffer[k];
-                    const h = b.toString(16).toUpperCase().padStart(2,'0');
-                    const a = (b >= 32 && b <= 126) ? String.fromCharCode(b) : '.';
-                    if(k >= i && k < i+target.length) {
-                        hexStr += `<b style="color:var(--success)">${h}</b> `;
-                        asciiStr += `<b style="color:var(--success)">${a.replace(/</g,'&lt;')}</b>`;
-                    } else {
-                        hexStr += h + " ";
-                        asciiStr += a.replace(/</g,'&lt;');
-                    }
-                }
-                html += `<div class="card"><span>OFFSET: <b>0x${off}</b></span><div class="preview-box">${hexStr}<br>${asciiStr}</div></div>`;
-                if(html.length > 5000) break; 
-            }
-        }
-        res.innerHTML = html || "Không thấy kết quả.";
-    }
-
-    // --- GMAIL LOGIC ---
-    async function genE() {
-        const r = await fetch('https://www.1secmail.com/api/v1/?action=genRandomMailbox&count=1');
-        const d = await r.json();
-        [mU, mD] = d[0].split('@');
-        document.getElementById('eAddr').innerText = d[0];
-        document.getElementById('eInbox').innerHTML = "<center><small>Đang đợi thư...</small></center>";
-        clearInterval(mTick);
-        mTick = setInterval(checkE, 5000);
-    }
-
-    async function checkE() {
-        const r = await fetch(`https://www.1secmail.com/api/v1/?action=getMessages&login=${mU}&domain=${mD}`);
-        const list = await r.json();
-        if(list.length > 0) {
-            document.getElementById('eInbox').innerHTML = list.map(m => `
-                <div class="card" onclick="readE(${m.id})" style="cursor:pointer; border-left:4px solid var(--accent)">
-                    <b>${m.subject}</b><br><small>${m.from}</small>
+            <div class="link-card glass-panel" data-category="dev">
+                <div class="link-content">
+                    <div class="link-icon" style="color: #bc13fe;"><i class="fa-solid fa-laptop-code"></i></div>
+                    <div class="link-info">
+                        <h3>Personal Portfolio</h3>
+                        <p>Trang web giới thiệu năng lực cá nhân.</p>
+                    </div>
                 </div>
-            `).join('');
-        }
-    }
+                <div class="link-actions">
+                    <button class="action-btn copy-btn" data-url="https://portfolio.com"><i class="fa-regular fa-copy"></i></button>
+                    <a href="https://portfolio.com" target="_blank" class="action-btn visit-btn"><i class="fa-solid fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </section>
+        
+        <footer>
+            <p>Premium Hub © 2026</p>
+        </footer>
+    </main>
 
-    async function readE(id) {
-        const r = await fetch(`https://www.1secmail.com/api/v1/?action=readMessage&login=${mU}&domain=${mD}&id=${id}`);
-        const d = await r.json();
-        const v = document.getElementById('mailView');
-        v.style.display = 'block';
-        v.innerHTML = `<h3>${d.subject}</h3><hr>${d.htmlBody || d.body}`;
-        v.scrollIntoView({behavior:'smooth'});
-    }
+    <div id="toast" class="toast glass-panel">Đã copy link!</div>
 
-    function copyE() {
-        navigator.clipboard.writeText(document.getElementById('eAddr').innerText);
-        alert("Đã copy!");
-    }
-</script>
+    <script src="script.js"></script>
 </body>
 </html>
