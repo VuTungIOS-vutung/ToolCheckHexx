@@ -1,177 +1,70 @@
-/* --- BIẾN TOÀN CỤC --- */
-:root {
-    --font-main: 'Inter', sans-serif;
-    --transition-smooth: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
-
-/* Biến màu Dark Mode (Mặc định) */
-body.dark-mode {
-    --bg-base: #0a0a0c;
-    --text-primary: #ffffff;
-    --text-secondary: #a0a0aa;
-    --glass-bg: rgba(255, 255, 255, 0.05);
-    --glass-border: rgba(255, 255, 255, 0.1);
-    --glass-hover: rgba(255, 255, 255, 0.08);
-    --accent-color: #bc13fe;
-    --sphere-1: #00f3ff;
-    --sphere-2: #bc13fe;
-}
-
-/* Biến màu Light Mode */
-body.light-mode {
-    --bg-base: #f4f4f6;
-    --text-primary: #1a1a1c;
-    --text-secondary: #666666;
-    --glass-bg: rgba(255, 255, 255, 0.6);
-    --glass-border: rgba(0, 0, 0, 0.05);
-    --glass-hover: rgba(255, 255, 255, 0.9);
-    --accent-color: #6a11cb;
-    --sphere-1: #a18cd1;
-    --sphere-2: #fbc2eb;
-}
-
-/* --- RESET & CƠ BẢN --- */
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: var(--font-main); }
 
 body {
-    background-color: var(--bg-base);
-    color: var(--text-primary);
-    min-height: 100vh;
-    overflow-x: hidden;
-    transition: background-color 0.5s ease, color 0.5s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #ffe6e6; /* Màu hồng nhạt lãng mạn */
+    font-family: 'Arial', sans-serif;
+    overflow: hidden; /* Ngăn cuộn trang khi nút "Từ chối" di chuyển */
 }
 
-/* --- LOADING ANIMATION --- */
-#loader {
-    position: fixed; width: 100vw; height: 100vh;
-    background: var(--bg-base); z-index: 9999;
-    display: flex; justify-content: center; align-items: center;
-    transition: opacity 0.5s ease;
-}
-.spinner {
-    width: 50px; height: 50px;
-    border: 3px solid var(--glass-border);
-    border-top-color: var(--accent-color);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-@keyframes spin { 100% { transform: rotate(360deg); } }
-
-/* --- BACKGROUND PARALLAX --- */
-.background-elements {
-    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-    z-index: -1; overflow: hidden; pointer-events: none;
-}
-.gradient-sphere {
-    position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.5;
-    animation: float 15s infinite alternate ease-in-out;
-}
-.shape-1 {
-    width: 500px; height: 500px; background: var(--sphere-1);
-    top: -10%; left: -10%;
-}
-.shape-2 {
-    width: 600px; height: 600px; background: var(--sphere-2);
-    bottom: -20%; right: -10%; animation-delay: -5s;
-}
-@keyframes float {
-    0% { transform: translate(0, 0) scale(1); }
-    100% { transform: translate(100px, 50px) scale(1.1); }
+.container {
+    text-align: center;
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
-/* --- GLASSMORPHISM COMPONENT --- */
-.glass-panel {
-    background: var(--glass-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid var(--glass-border);
-    border-radius: 24px;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+img {
+    width: 200px;
+    height: auto;
+    margin-bottom: 20px;
 }
 
-/* --- MAIN LAYOUT --- */
-.main-container {
-    max-width: 680px; margin: 0 auto; padding: 60px 20px;
-    display: flex; flex-direction: column; gap: 40px;
-    opacity: 0; transform: translateY(20px);
-    transition: var(--transition-smooth);
-}
-.main-container.loaded { opacity: 1; transform: translateY(0); }
-
-/* Profile */
-.profile-section { text-align: center; }
-.avatar-container { margin-bottom: 20px; }
-.avatar { width: 120px; height: 120px; border-radius: 50%; border: 4px solid var(--glass-border); padding: 5px; background: var(--glass-bg); }
-.name { font-size: 2rem; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 8px; }
-.bio { color: var(--text-secondary); font-size: 1rem; }
-
-/* Search & Filters */
-.tools-section { display: flex; flex-direction: column; gap: 20px; }
-.search-box { display: flex; align-items: center; padding: 15px 25px; border-radius: 100px; }
-.search-box i { color: var(--text-secondary); margin-right: 15px; font-size: 1.2rem; }
-.search-box input {
-    flex: 1; background: transparent; border: none; outline: none;
-    color: var(--text-primary); font-size: 1rem;
-}
-.category-filters { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; }
-.category-filters::-webkit-scrollbar { display: none; }
-.filter-btn {
-    padding: 10px 20px; border-radius: 100px; border: 1px solid var(--glass-border);
-    background: var(--glass-bg); color: var(--text-primary); cursor: pointer;
-    white-space: nowrap; transition: var(--transition-smooth);
-}
-.filter-btn.active, .filter-btn:hover { background: var(--accent-color); color: #fff; border-color: var(--accent-color); }
-
-/* Link Cards */
-.links-grid { display: flex; flex-direction: column; gap: 15px; }
-.link-card {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 20px; transition: var(--transition-smooth); cursor: pointer;
-}
-.link-card:hover { transform: translateY(-5px); background: var(--glass-hover); border-color: var(--accent-color); box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
-.link-content { display: flex; align-items: center; gap: 20px; flex: 1; }
-.link-icon { font-size: 2rem; color: var(--text-primary); width: 50px; text-align: center; }
-.link-info h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 4px; }
-.link-info p { font-size: 0.85rem; color: var(--text-secondary); }
-.link-actions { display: flex; gap: 10px; }
-.action-btn {
-    width: 40px; height: 40px; border-radius: 50%; border: none;
-    background: var(--glass-bg); color: var(--text-primary);
-    display: flex; justify-content: center; align-items: center;
-    cursor: pointer; transition: var(--transition-smooth); font-size: 1.1rem; text-decoration: none;
-}
-.action-btn:hover { background: var(--text-primary); color: var(--bg-base); }
-
-/* Floating Controls (Theme & Music) */
-.floating-controls { position: fixed; top: 30px; right: 30px; display: flex; gap: 15px; z-index: 100; }
-.glass-btn {
-    width: 50px; height: 50px; border-radius: 50%; border: 1px solid var(--glass-border);
-    background: var(--glass-bg); backdrop-filter: blur(10px); color: var(--text-primary);
-    cursor: pointer; font-size: 1.2rem; transition: var(--transition-smooth);
-}
-.glass-btn:hover { transform: scale(1.1); background: var(--glass-hover); }
-.glass-btn.playing { color: var(--accent-color); animation: pulse 2s infinite; }
-
-@keyframes pulse {
-    0% { box-shadow: 0 0 0 0 rgba(188, 19, 254, 0.4); }
-    70% { box-shadow: 0 0 0 15px rgba(188, 19, 254, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(188, 19, 254, 0); }
+h1 {
+    color: #ff4d4d;
+    font-size: 28px;
+    margin-bottom: 30px;
 }
 
-/* Footer & Toast */
-footer { text-align: center; color: var(--text-secondary); font-size: 0.9rem; margin-top: 20px; }
-.toast {
-    position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%);
-    padding: 15px 30px; color: #fff; border-radius: 100px;
-    transition: bottom 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); z-index: 1000;
-}
-.toast.show { bottom: 40px; }
-
-/* Responsive */
-@media (max-width: 600px) {
-    .floating-controls { top: 20px; right: 20px; }
-    .glass-btn { width: 40px; height: 40px; font-size: 1rem; }
-    .link-card { padding: 15px; }
-    .link-icon { font-size: 1.5rem; width: 40px; }
+.btn-group {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    height: 50px;
 }
 
+button {
+    padding: 12px 24px;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+#yes-btn {
+    background-color: #ff4d4d;
+    color: white;
+    box-shadow: 0 5px 15px rgba(255, 77, 77, 0.4);
+}
+
+#yes-btn:hover {
+    transform: scale(1.1);
+    background-color: #ff1a1a;
+}
+
+#no-btn {
+    background-color: #cccccc;
+    color: #333;
+    position: relative;
+}
