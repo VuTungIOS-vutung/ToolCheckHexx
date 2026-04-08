@@ -1,100 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premium Link Hub</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Gửi cậu...</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="dark-mode"> <div id="loader">
-        <div class="spinner"></div>
-    </div>
-
-    <div class="background-elements">
-        <div class="gradient-sphere shape-1"></div>
-        <div class="gradient-sphere shape-2"></div>
-    </div>
-
-    <div class="floating-controls">
-        <button id="theme-toggle" class="glass-btn"><i class="fa-solid fa-moon"></i></button>
-        <button id="music-toggle" class="glass-btn"><i class="fa-solid fa-music"></i></button>
-        <audio id="bg-music" src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3" loop></audio>
-    </div>
-
-    <main class="main-container fade-in">
+<body>
+    <div class="container" id="container">
+        <img id="gif" src="https://media.tenor.com/ef3I-IWe7pQAAAAi/tkthao219-bubududu.gif" alt="Cute bear GIF">
         
-        <header class="profile-section">
-            <div class="avatar-container">
-                <img src="https://api.dicebear.com/6.x/avataaars/svg?seed=Felix" alt="Profile Avatar" class="avatar">
-            </div>
-            <h1 class="name">Creator Name</h1>
-            <p class="bio">Digital Artist & Developer • Minimalist</p>
-        </header>
-
-        <section class="tools-section">
-            <div class="search-box glass-panel">
-                <i class="fa-solid fa-search"></i>
-                <input type="text" id="search-input" placeholder="Tìm kiếm link...">
-            </div>
-            <div class="category-filters">
-                <button class="filter-btn active" data-filter="all">Tất cả</button>
-                <button class="filter-btn" data-filter="dev">Lập trình</button>
-                <button class="filter-btn" data-filter="social">Mạng xã hội</button>
-            </div>
-        </section>
-
-        <section class="links-grid" id="links-container">
-            <div class="link-card glass-panel" data-category="dev">
-                <div class="link-content">
-                    <div class="link-icon"><i class="fa-brands fa-github"></i></div>
-                    <div class="link-info">
-                        <h3>GitHub Workspace</h3>
-                        <p>Source code và các dự án mã nguồn mở.</p>
-                    </div>
-                </div>
-                <div class="link-actions">
-                    <button class="action-btn copy-btn" data-url="https://github.com"><i class="fa-regular fa-copy"></i></button>
-                    <a href="https://github.com" target="_blank" class="action-btn visit-btn"><i class="fa-solid fa-arrow-right"></i></a>
-                </div>
-            </div>
-
-            <div class="link-card glass-panel" data-category="social">
-                <div class="link-content">
-                    <div class="link-icon" style="color: #00f3ff;"><i class="fa-brands fa-twitter"></i></div>
-                    <div class="link-info">
-                        <h3>Twitter / X</h3>
-                        <p>Cập nhật tin tức và bài viết mới nhất.</p>
-                    </div>
-                </div>
-                <div class="link-actions">
-                    <button class="action-btn copy-btn" data-url="https://twitter.com"><i class="fa-regular fa-copy"></i></button>
-                    <a href="https://twitter.com" target="_blank" class="action-btn visit-btn"><i class="fa-solid fa-arrow-right"></i></a>
-                </div>
-            </div>
-            
-            <div class="link-card glass-panel" data-category="dev">
-                <div class="link-content">
-                    <div class="link-icon" style="color: #bc13fe;"><i class="fa-solid fa-laptop-code"></i></div>
-                    <div class="link-info">
-                        <h3>Personal Portfolio</h3>
-                        <p>Trang web giới thiệu năng lực cá nhân.</p>
-                    </div>
-                </div>
-                <div class="link-actions">
-                    <button class="action-btn copy-btn" data-url="https://portfolio.com"><i class="fa-regular fa-copy"></i></button>
-                    <a href="https://portfolio.com" target="_blank" class="action-btn visit-btn"><i class="fa-solid fa-arrow-right"></i></a>
-                </div>
-            </div>
-        </section>
+        <h1 id="question">Cậu làm người yêu mình nhé? ❤️</h1>
         
-        <footer>
-            <p>Premium Hub © 2026</p>
-        </footer>
-    </main>
-
-    <div id="toast" class="toast glass-panel">Đã copy link!</div>
+        <div class="btn-group" id="btn-group">
+            <button id="yes-btn">Đồng ý luôn! 🥰</button>
+            <button id="no-btn">Từ chối 💔</button>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>
