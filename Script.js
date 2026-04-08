@@ -1,99 +1,46 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. Loading Screen
-    setTimeout(() => {
-        document.getElementById('loader').style.opacity = '0';
-        setTimeout(() => {
-            document.getElementById('loader').style.display = 'none';
-            document.querySelector('.main-container').classList.add('loaded');
-        }, 500);
-    }, 1000);
+const yesBtn = document.getElementById('yes-btn');
+const noBtn = document.getElementById('no-btn');
+const question = document.getElementById('question');
+const gif = document.getElementById('gif');
+const btnGroup = document.getElementById('btn-group');
 
-    // 2. Theme Toggle (Dark/Light Mode)
-    const themeBtn = document.getElementById('theme-toggle');
-    const body = document.body;
-    themeBtn.addEventListener('click', () => {
-        if (body.classList.contains('dark-mode')) {
-            body.classList.replace('dark-mode', 'light-mode');
-            themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
-        } else {
-            body.classList.replace('light-mode', 'dark-mode');
-            themeBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
-        }
-    });
+// Khi người ấy bấm nút "Đồng ý"
+yesBtn.addEventListener('click', () => {
+    // Đổi câu hỏi thành lời cảm ơn/yêu thương
+    question.innerHTML = "Mình biết ngay mà! Yêu cậu nhiều lắm ❤️❤️❤️";
+    
+    // Đổi ảnh GIF thành ảnh ôm nhau/hạnh phúc
+    gif.src = "https://media.tenor.com/gUiu1zyxfzYAAAAi/bear-kiss-bear-kisses.gif";
+    
+    // Ẩn các nút bấm đi
+    btnGroup.style.display = 'none';
+});
 
-    // 3. Lofi Music Player (Tuân thủ UX: tắt mặc định, âm lượng 30%)
-    const musicBtn = document.getElementById('music-toggle');
-    const bgMusic = document.getElementById('bg-music');
-    bgMusic.volume = 0.3; // Âm lượng thấp dễ chịu
-    let isPlaying = false;
+// Khi con trỏ chuột chạm vào nút "Từ chối"
+noBtn.addEventListener('mouseover', () => {
+    // Tính toán vị trí ngẫu nhiên trên màn hình
+    const maxX = window.innerWidth - noBtn.offsetWidth;
+    const maxY = window.innerHeight - noBtn.offsetHeight;
+    
+    const randomX = Math.floor(Math.random() * maxX);
+    const randomY = Math.floor(Math.random() * maxY);
+    
+    // Áp dụng vị trí mới cho nút "Từ chối"
+    noBtn.style.position = 'fixed';
+    noBtn.style.left = randomX + 'px';
+    noBtn.style.top = randomY + 'px';
+});
 
-    musicBtn.addEventListener('click', () => {
-        if (isPlaying) {
-            bgMusic.pause();
-            musicBtn.classList.remove('playing');
-            musicBtn.innerHTML = '<i class="fa-solid fa-music"></i>';
-        } else {
-            bgMusic.play();
-            musicBtn.classList.add('playing');
-            musicBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
-        }
-        isPlaying = !isPlaying;
-    });
-
-    // 4. Search Functionality
-    const searchInput = document.getElementById('search-input');
-    const linkCards = document.querySelectorAll('.link-card');
-
-    searchInput.addEventListener('input', (e) => {
-        const text = e.target.value.toLowerCase();
-        linkCards.forEach(card => {
-            const title = card.querySelector('h3').innerText.toLowerCase();
-            const desc = card.querySelector('p').innerText.toLowerCase();
-            if (title.includes(text) || desc.includes(text)) {
-                card.style.display = 'flex';
-            } else {
-                card.style.display = 'none';
-            }
-        });
-    });
-
-    // 5. Category Filters
-    const filterBtns = document.querySelectorAll('.filter-btn');
-    filterBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            // Remove active class
-            filterBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-
-            const filterValue = btn.getAttribute('data-filter');
-            linkCards.forEach(card => {
-                if (filterValue === 'all' || card.getAttribute('data-category') === filterValue) {
-                    card.style.display = 'flex';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        });
-    });
-
-    // 6. Copy to Clipboard & Toast
-    const copyBtns = document.querySelectorAll('.copy-btn');
-    const toast = document.getElementById('toast');
-
-    copyBtns.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation(); // Ngăn click lan ra thẻ cha
-            const url = btn.getAttribute('data-url');
-            navigator.clipboard.writeText(url).then(() => {
-                showToast();
-            });
-        });
-    });
-
-    function showToast() {
-        toast.classList.add('show');
-        setTimeout(() => {
-            toast.classList.remove('show');
-        }, 2000);
-    }
+// Đề phòng người ấy thao tác trên điện thoại (chạm vào màn hình thay vì dùng chuột)
+noBtn.addEventListener('touchstart', (e) => {
+    e.preventDefault(); // Ngăn chặn việc bấm được
+    const maxX = window.innerWidth - noBtn.offsetWidth;
+    const maxY = window.innerHeight - noBtn.offsetHeight;
+    
+    const randomX = Math.floor(Math.random() * maxX);
+    const randomY = Math.floor(Math.random() * maxY);
+    
+    noBtn.style.position = 'fixed';
+    noBtn.style.left = randomX + 'px';
+    noBtn.style.top = randomY + 'px';
 });
